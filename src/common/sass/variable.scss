@@ -1,0 +1,86 @@
+@charset "UTF-8";
+// 页面宽度
+$page-width: 1180px;
+
+// 颜色定义规范
+$brand:#0098FF;
+$brand-1:#E6F7FF;
+$navbar:#001529;
+$navbar-1:#000;
+$success:#0CCE8F;
+$success-1:#E6FAF3;
+$warning:#FDA300;
+$warning-1:#FEF5E5;
+$error:#FF462D;
+$error-1:#FFECEA;
+
+$background:#fff;
+$background-active: #e6f7ff;
+
+// 字体定义
+$font-title-color: #333;
+$font-body-color: #666;
+$font-secondary-color:#999;
+$font-warning-color: #FAAD14;
+$font-error-color:#F5222D;
+$font-success-color:#52C41A;
+$font-link-color:#1890FF;
+$font-active-color:#33ACFF;
+
+$border-answer-color: #0CCE8F;
+$border-prompt-color:#FDA300;
+
+.font-20pt-title {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 500;
+    color: $font-title-color;
+}
+
+.font-24pt-title {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 500;
+    color: $font-title-color;
+}
+
+.font-14pt-title {
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 500;
+    color: $font-title-color;
+}
+
+.font-16pt-title {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    color: $font-title-color;
+}
+
+.font-14pt-body {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: $font-body-color;
+}
+
+.font-14pt-secondary {
+    font-size: 14px;
+    color: $font-secondary-color;
+    font-weight: 400;
+    line-height: 22px;
+}
+
+// Buttons
+.primary-button-2 {
+    background: linear-gradient(90deg, rgba(29, 180, 254, 1) 0%, rgba(2, 140, 255, 1) 100%) !important;
+    border-radius: 4px !important;
+    border: 0 !important;
+}
+
+.secondary-button-1 {
+    background: rgba(255, 255, 255, 1);
+    border-radius: 4px;
+    border: 1px solid rgba(221, 221, 221, 1);
+}
