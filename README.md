@@ -9,26 +9,19 @@ npm install
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
+### 测试服环境打报
 ```
-npm run build
+npm run serve
 ```
-
-### Run your tests
+### 生产环境打包
 ```
-npm run test
+npm run build:prod
 ```
 
-### Lints and fixes files
+### eslint自动格式化代码命令
 ```
 npm run lint
 ```
 
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
+### vue-cli 配置地址
 See [Configuration Reference](https://cli.vuejs.org/config/).
