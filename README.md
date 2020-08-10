@@ -9,9 +9,10 @@ npm install
 ```
 npm run serve
 ```
-### 测试服环境打报
+
+### 测试环境打包
 ```
-npm run serve
+npm run build
 ```
 ### 生产环境打包
 ```
