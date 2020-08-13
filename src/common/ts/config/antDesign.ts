@@ -33,7 +33,14 @@ import {
   TreeSelect,
   FormModel,
   Tree,
-  Popover
+  Popover,
+  Layout,
+  List,
+  Tabs,
+  AutoComplete,
+  Badge,
+  Avatar,
+  Drawer,
 } from 'ant-design-vue';
 import confirm from 'ant-design-vue/es/modal/confirm';
 
@@ -70,5 +77,12 @@ Vue.use(Col);
 Vue.use(TreeSelect);
 Vue.use(Tree);
 Vue.use(Popover);
+Vue.use(Layout);
+Vue.use(List);
+Vue.use(Tabs);
+Vue.use(AutoComplete);
+Vue.use(Badge);
+Vue.use(Avatar);
+Vue.use(Drawer);
 Vue.prototype.$message = message;
 Vue.prototype.$confirm = confirm;

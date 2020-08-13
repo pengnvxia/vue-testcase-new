@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import project from './project';
+
 
 // //\ 屏蔽相同路由时报错
 const originalPush: any = Router.prototype.push;
@@ -14,6 +16,7 @@ export const router: Router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
+      ...project,
     {
       path: '/',
       redirect: '/home',
@@ -40,6 +43,9 @@ export const router: Router = new Router({
     {
       path: '*',
       name: 'error',
+      meta: {
+        title:'错误'
+      },
       component: () => import(/* webpackChunkName: "notFound" */ '@/views/Error/Index.vue')
     }
   ]
