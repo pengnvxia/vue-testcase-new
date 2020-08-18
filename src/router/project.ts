@@ -9,7 +9,7 @@ const project: RouteConfig[] = [{
     children: [
         {
             path: 'index',
-            name: '项目',
+            name: 'project',
             meta:{title:'项目'},
             component: ()=> import('@/views/Project/Index.vue'),
         },
@@ -19,9 +19,14 @@ const project: RouteConfig[] = [{
             component: ()=> import('@/views/Project/Add.vue')
         },
         {
-            path: 'detail',
+            path: 'detail/:id',
             meta:{title:'项目详情'},
             component: ()=> import('@/views/Project/Detail.vue')
+        },
+        {
+            path: 'edit/:id',
+            meta:{title:'编辑项目'},
+            component: ()=> import('@/views/Project/Edit.vue')
         }
 
         // {

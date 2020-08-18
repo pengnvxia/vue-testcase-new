@@ -25,7 +25,7 @@
 </template>
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import { addProject } from "@/services/project/index";
+    import { editProject,getProject } from "@/services/project/index";
 
     @Component
     export default class Project extends Vue {
@@ -43,24 +43,46 @@
                     message: "请输入项目名称",
                     trigger: "blur"
                 }
-                ],
+            ],
         };
+        private mounted(): void {
+            this.getProjectInfo(this.$route.params.id)
+        }
 
+        private getProjectInfo(id:String) {
+            getProject(id).then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.projectForm = result.retval;
+                    }
+                },
+                (err: any) => {
+                    if (err.errcode === "PRO001") {
+                        this.$message;
+                        return;
+                    }
+                    this.$message.error(err.errmsg);
+                }
+            );
+        }
         private submit(): void{
-            addProject(this.projectForm).then(
-            (result: any) => {
-                if (result.errcode === "0") {
-                    this.$message.success("提交成功");
-                    this.$router.push({path:'/index'});
+            editProject(this.projectForm).then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.$message.success("提交成功");
+                        this.$router.push({path:'/index'});
+                    }
+                },
+                (err: any) => {
+                    if (err.errcode === "PRO001") {
+                        this.$message;
+                        return;
+                    }else if(err.errcode === "PRO002") {
+                        this.$message;
+                        return;
+                    }
+                    this.$message.error(err.errmsg);
                 }
-            },
-            (err: any) => {
-                if (err.errcode === "PRO002") {
-                    this.$message;
-                    return;
-                }
-                this.$message.error(err.errmsg);
-            }
             );
         }
 

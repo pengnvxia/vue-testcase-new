@@ -5,3 +5,8 @@ export interface Project {
     prodAddress: string,
     description: string
 }
+
+export interface Module {
+    id: number,
+    moduleName: string
+}

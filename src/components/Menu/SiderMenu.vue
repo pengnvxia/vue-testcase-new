@@ -9,7 +9,7 @@
 
         >
             <template v-for="item in menuData">
-                <a-menu-item v-if="!item.children" :key="item.key" @click="()=>$router.push({path:item.path,query:$route.query})">
+                <a-menu-item v-if="!item.children" :key="item.key" @click="()=>$router.push({name:item.name,query:$route.query})">
                     <a-icon type="pie-chart" />
                     <span>{{ item.meta.title }}</span>
                 </a-menu-item>
