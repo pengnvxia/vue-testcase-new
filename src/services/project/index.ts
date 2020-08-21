@@ -72,4 +72,18 @@ export function getInterfaceList(envId: number, repositoryId: number, moduleId: 
     return Base(config);
 }
 
+export function addModule(envId: number, repositoryId: number, name: string, description: string){
+    const config: AxiosRequestConfig = {
+        url: `${PROJECTSERVER}/project/module/add`,
+        method: 'post',
+        data: {
+            envId: envId,
+            repositoryId: repositoryId,
+            name: name,
+            description: description
+        }
+    }
+    return Base(config);
+}
+
 

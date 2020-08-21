@@ -66,7 +66,6 @@
                     }
 
                 }
-                // console.log(this.projectDataThree);
             }
 
         }
@@ -83,7 +82,6 @@
 
         }
         private handleDetail(projectId:number): void {
-            console.log(`detail/${projectId}`);
             this.$router.push({
                 path:`/detail/${projectId}`
 
@@ -91,7 +89,7 @@
             });
         }
 
-        private handleDel(id:number,name:string){
+        private handleDel(id:number,name:string): void{
             var that: any=this;
             this.$confirm({
                 title: `确定要删除${name}项目吗？`,

@@ -41,6 +41,8 @@ import {
   Badge,
   Avatar,
   Drawer,
+  Popconfirm,
+  Collapse,
 } from 'ant-design-vue';
 import confirm from 'ant-design-vue/es/modal/confirm';
 
@@ -84,5 +86,7 @@ Vue.use(AutoComplete);
 Vue.use(Badge);
 Vue.use(Avatar);
 Vue.use(Drawer);
+Vue.use(Popconfirm);
+Vue.use(Collapse);
 Vue.prototype.$message = message;
 Vue.prototype.$confirm = confirm;

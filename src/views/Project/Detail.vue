@@ -45,17 +45,37 @@
 <!--        <a-tab-pane key="2" tab="Tab 2">-->
 <!--            Content of Tab Pane 2-->
 <!--        </a-tab-pane>-->
-        <a-tab-pane :key="-1">
-            <a-icon slot="tab" type="plus" />
-            Content of Tab Pane 3
-        </a-tab-pane>
+<!--        <a-tab-pane :key="-1">-->
+<!--            <a-icon slot="tab" type="plus" />-->
 
+<!--        </a-tab-pane>-->
+        <a-button slot="tabBarExtraContent" @click=" visible = !visible">
+            添加模块
+        </a-button>
     </a-tabs>
+        <a-modal v-model="visible" title="添加模块" on-ok="handleOk">
+            <template slot="footer">
+                <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
+                    提交
+                </a-button>
+                <a-button key="back" @click="handleCancel">
+                    取消
+                </a-button>
+            </template>
+            <a-form-model class="form" :rules="roleRules" :model="moduleForm" ref="ruleForm">
+                <a-form-model-item prop="moduleName" label="模块名称："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
+                    <a-input v-model="moduleForm.moduleName" placeholder="输入..."></a-input>
+                </a-form-model-item>
+                <a-form-model-item prop="description" label="备注：" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
+                    <a-textarea v-model="moduleForm.description" placeholder="输入..."></a-textarea>
+                </a-form-model-item>
+            </a-form-model>
+        </a-modal>
     </div>
 </template>
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import { getModuleList,getInterfaceList } from '@/services/project/index';
+    import { getModuleList, getInterfaceList, addModule } from '@/services/project/index';
 
     interface Mod{
         id: number;
@@ -84,7 +104,21 @@
         private repositoryId: number = Number(this.$route.params.id);
         private interInfo: Inter[] = [];
         private activeKey: number = 0;
-        // private innerData: Testcase[]=[];
+        private visible: boolean = false;
+        private loading: boolean = false;
+        private moduleForm: any={
+            moduleName: "",
+            description: ""
+        };
+        private roleRules:any = {
+            moduleName: [
+                {
+                    required: true,
+                    message: "请输入模块名称",
+                    trigger: "blur"
+                }
+            ],
+        };
         private columns = [
             {title: '接口名称', dataIndex: 'name', key: 'name'},
             {title: '地址', dataIndex: 'url', key: 'url'},
@@ -116,8 +150,11 @@
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.modules = result.retval;
-                        this.activeKey = this.modules[0].id;
-                        this.interfaceList(this.activeKey);
+                        if(this.modules.length>0){
+                            this.activeKey = this.modules[this.modules.length-1].id;
+                            this.interfaceList(this.activeKey);
+                        }
+
                     }
                 },
                 (err: any) => {
@@ -127,7 +164,6 @@
         }
 
         private interfaceList(activeKey: number): void{
-            console.log(activeKey);
             this.moduleId =  activeKey;
             getInterfaceList(Number(this.proEnv), this.repositoryId, this.moduleId ).then(
                 (result: any) => {
@@ -138,7 +174,33 @@
                 (err: any) => {
                     this.$message.error(err.errmsg);
                 }
-            )
+            );
+
+        }
+
+        private handleOk(): void{
+            this.loading = true;
+            addModule(Number(this.proEnv),this.repositoryId,this.moduleForm.moduleName,this.moduleForm.description).then(
+                (result: any) => {
+                    if (result.errcode === "0"){
+                        this.$message.success("添加成功");
+                        this.loading = false;
+                        this.visible = false;
+                        this.moduleList();
+                    }
+                },
+                (err: any) => {
+                    if (err.errcode === "MO002") {
+                        this.$message;
+                        return;
+                    }
+                    this.$message.error(err.errmsg);
+                }
+            );
+        }
+
+        private handleCancel(): void{
+            this.visible = false;
         }
 
     }
