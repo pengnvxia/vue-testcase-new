@@ -21,128 +21,77 @@
                 </a-col>
             </a-row>
             <a-form-model-item prop="projectName" label="配置项：" :label-col="{ span: 2 }" :wrapper-col="{ span: 5 }">
-                <a-select
-                        mode="multiple"
-                        placeholder="Inserted are removed"
-                        :value="selectedItems"
-                        @change="handleChange"
-                >
-                    <a-select-option v-for="item in notSelectedItems" :key="item" :value="item">
-                        {{ item }}
-                    </a-select-option>
+                <a-select mode="multiple" placeholder="Inserted are removed" :value="selectedItems" @change="handleChange">
+                    <a-select-option v-for="item in notSelectedItems" :key="item" :value="item">{{ item }}</a-select-option>
                 </a-select>
             </a-form-model-item>
         </div>
-
         <a-collapse expandIconPosition="right">
-
-        <a-collapse-panel  key="2" header="variables">
-        <a-table bordered :data-source="variablesDataSource" :columns="variablesColumns" :pagination="false">
-            <template
-                    v-for="col in ['name', 'type', 'value', 'database']"
-                    :slot="col"
-                    slot-scope="text, record, index"
-
-            >
-                <div :key="col">
-                    <a-form-model-item>
-                    <a-input
-                            style="margin: -5px 0"
-                            :value="text"
-                            @change="e => handleChange(e.target.value, record.key, col)"
-                            v-if="col == 'name' || col == 'value'"
-                    />
-                        <a-select v-else style="margin: -5px 0; width: 100px;" :defaultValue="text">
-                            <a-select-option value="lucy">
-                                Lucy
-                            </a-select-option>
-                        </a-select>
-                     </a-form-model-item>
-                </div>
-            </template>
-            <template slot="operation" slot-scope="text, record, index">
+            <a-collapse-panel  key="2" header="variables">
+                <a-table bordered :data-source="variablesDataSource" :columns="variablesColumns" :pagination="false">
+                    <template v-for="col in ['name', 'type', 'value', 'database']" :slot="col" slot-scope="text, record, index">
+                    <div :key="col">
+                        <a-form-model-item>
+                            <a-input style="margin: -5px 0" :value="text" v-if="col == 'name' || col == 'value'"/>
+                            <a-select v-else style="margin: -5px 0; width: 100px;" :defaultValue="text">
+                                <a-select-option value="lucy">Lucy</a-select-option>
+                            </a-select>
+                        </a-form-model-item>
+                    </div>
+                    </template>
+                    <template slot="operation" slot-scope="text, record, index">
                 <a-icon type="minus" @click="handleDeleteVariables(index)"/>
                 <a-icon type="plus" @click="handleAddVariables(index)"/>
             </template>
-            <a-icon type="plus" slot="footer" v-if="variablesDataSource.length<=0" @click="handleAddVariables(0)"/>
-        </a-table>
+                    <a-icon type="plus" slot="footer" v-if="variablesDataSource.length<=0" @click="handleAddVariables(0)"/>
+                </a-table>
             </a-collapse-panel>
             <a-collapse-panel  key="3" header="Parameters">
-        <a-table bordered :data-source="parametersDataSource" :columns="parametersColumns" :pagination="false">
-            <template
-                    v-for="col in ['name', 'value']"
-                    :slot="col"
-                    slot-scope="text, record, index"
+                <a-table bordered :data-source="parametersDataSource" :columns="parametersColumns" :pagination="false">
+                    <template v-for="col in ['name', 'value']" :slot="col" slot-scope="text, record, index">
+                        <div :key="col">
+                            <a-input style="margin: -5px 0" :value="text"/>
+                        </div>
+                    </template>
+                    <template slot="operation" slot-scope="text, record, index">
+                        <a-popconfirm v-if="parametersDataSource.length">
+                            <a-icon type="minus" @click="handleDeleteParameters(index)"/>
+                        </a-popconfirm>
+                        <a-icon type="plus" @click="handleAddParameters(index)"/>
+                    </template>
+                    <a-icon type="plus" slot="footer" v-if="parametersDataSource.length<=0" @click="handleAddParameters(0)"/>
 
-            >
-                <div :key="col">
-                    <a-input
-                            style="margin: -5px 0"
-                            :value="text"
-                            @change="e => handleChange(e.target.value, record.key, col)"
-                    />
-                </div>
-            </template>
-            <template slot="operation" slot-scope="text, record">
-                <a-popconfirm
-                        v-if="parametersDataSource.length"
-                        title="Sure to delete?"
-                        @confirm="() => onDelete(record.key)"
-                >
-                    <a-icon type="minus" />
-                </a-popconfirm>
-                <a-icon type="plus"/>
-            </template>
-            <a-icon type="plus" slot="footer" v-if="parametersDataSource.length<=0"/>
-
-        </a-table>
+                </a-table>
             </a-collapse-panel>
-                <a-collapse-panel  key="4" header="Setuphooks">
-            <a-table  :data-source="setuphooksDataSource" :columns="setuphooksColumns" :pagination="false">
-                <template
-                        v-for="col in ['sql', 'database']"
-                        :slot="col"
-                        slot-scope="text, record, index"
-
-                >
-                    <div :key="col">
-                        <a-input
-                                style="margin: -5px 0"
-                                :value="text"
-                                @change="e => handleChange(e.target.value, record.key, col)"
-                                v-if="col == 'sql'"
-                        />
-                        <a-select v-else style="margin: -5px 0; width: 100px;" :defaultValue="text">
-                            <a-select-option value="lucy">
-                                Lucy
-                            </a-select-option>
-                        </a-select>
-                    </div>
-                </template>
-                <template slot="operation" slot-scope="text, record">
-                    <a-popconfirm
-                            v-if="setuphooksDataSource.length"
-                            title="Sure to delete?"
-                            @confirm="() => onDelete(record.key)"
-                    >
-                        <a-icon type="minus" />
-                    </a-popconfirm>
-                    <a-icon type="plus" />
-                </template>
-                <a-icon type="plus" slot="footer" v-if="setuphooksDataSource.length<=0"/>
-
-            </a-table>
-                </a-collapse-panel>
+            <a-collapse-panel  key="4" header="Setuphooks">
+                <a-table bordered :data-source="setuphooksDataSource" :columns="setuphooksColumns" :pagination="false">
+                    <template v-for="col in ['sql', 'database']" :slot="col" slot-scope="text, record, index">
+                        <div :key="col">
+                            <a-input style="margin: -5px 0" :value="text" v-if="col == 'sql'"/>
+                            <a-select v-else style="margin: -5px 0; width: 100px;" :defaultValue="text">
+                                <a-select-option value="lucy">Lucy</a-select-option>
+                            </a-select>
+                        </div>
+                    </template>
+                    <template slot="operation" slot-scope="text, record, index">
+                        <a-popconfirm v-if="setuphooksDataSource.length">
+                            <a-icon type="minus" @click="handleDeleteSetuphooks(index)"/>
+                        </a-popconfirm>
+                        <a-icon type="plus" @click="handleAddSetuphooks(index)"/>
+                    </template>
+                    <a-icon type="plus" slot="footer" v-if="setuphooksDataSource.length<=0" @click="handleAddSetuphooks(0)"/>
+                </a-table>
+            </a-collapse-panel>
             <a-collapse-panel  key="5" header="Request&Response">
-    <div>
-        <h3 class="title">
+                <div>
+                    <h3 class="title">
             request
         </h3>
-        <a-tabs default-active-key="1">
-            <a-tab-pane key="1" tab="headers">
+                    <a-tabs default-active-key="1">
+                        <a-tab-pane key="1" tab="headers">
                 <a-table bordered :data-source="resHeaderDataSource" :columns="resHeaderColumns" :pagination="false">
                     <template
-                            v-for="col in ['key', 'value']"
+                            v-for="col in ['keyName', 'value']"
                             :slot="col"
                             slot-scope="text, record, index"
 
@@ -151,7 +100,6 @@
                             <a-input
                                     style="margin: -5px 0"
                                     :value="text"
-                                    @change="e => handleChange(e.target.value, record.key, col)"
                             />
 
                         </div>
@@ -159,21 +107,19 @@
                     <template slot="operation" slot-scope="text, record">
                         <a-popconfirm
                                 v-if="resHeaderColumns.length"
-                                title="Sure to delete?"
-                                @confirm="() => onDelete(record.key)"
                         >
-                            <a-icon type="minus" />
+                            <a-icon type="minus" @click="handleDeleteResHeader(index)"/>
                         </a-popconfirm>
-                        <a-icon type="plus" />
+                        <a-icon type="plus" @click="handleAddResHeader(index)"/>
                     </template>
-                    <a-icon type="plus" slot="footer" v-if="resHeaderDataSource.length<=0"/>
+                    <a-icon type="plus" slot="footer" v-if="resHeaderDataSource.length<=0" @click="handleAddResHeader(0)"/>
 
                 </a-table>
             </a-tab-pane>
-            <a-tab-pane key="2" tab="params" force-render>
+                        <a-tab-pane key="2" tab="params" force-render>
                 <a-table bordered :data-source="resParamsDataSource" :columns="resParamsColumns" :pagination="false">
                     <template
-                            v-for="col in ['key', 'value']"
+                            v-for="col in ['keyName', 'value']"
                             :slot="col"
                             slot-scope="text, record, index"
 
@@ -182,36 +128,33 @@
                             <a-input
                                     style="margin: -5px 0"
                                     :value="text"
-                                    @change="e => handleChange(e.target.value, record.key, col)"
                             />
 
                         </div>
                     </template>
-                    <template slot="operation" slot-scope="text, record">
+                    <template slot="operation" slot-scope="text, record, index">
                         <a-popconfirm
                                 v-if="resParamsColumns.length"
-                                title="Sure to delete?"
-                                @confirm="() => onDelete(record.key)"
                         >
-                            <a-icon type="minus" />
+                            <a-icon type="minus" @click="handleDeleteResParams(index)"/>
                         </a-popconfirm>
-                        <a-icon type="plus" />
+                        <a-icon type="plus" @click="handleAddResParams(index)"/>
                     </template>
-                    <a-icon type="plus" slot="footer" v-if="resParamsDataSource.length<=0"/>
+                    <a-icon type="plus" slot="footer" v-if="resParamsDataSource.length<=0" @click="handleAddResParams(0)"/>
 
                 </a-table>
 
             </a-tab-pane>
-            <a-tab-pane key="3" tab="requestBody">
+                        <a-tab-pane key="3" tab="requestBody">
                 <a-textarea placeholder="Basic usage" :rows="6" />
-            </a-tab-pane>
-        </a-tabs>
-    </div>
-    <div>
-        <h3 class="title">
+                        </a-tab-pane>
+                    </a-tabs>
+                </div>
+                <div>
+                    <h3 class="title">
              response
          </h3>
-         <a-table bordered :data-source="responseDataSource" :columns="responseColumns" :pagination="false">
+                    <a-table bordered :data-source="responseDataSource" :columns="responseColumns" :pagination="false">
                 <template
                         v-for="col in ['name', 'type', 'comparator', 'expected']"
                         :slot="col"
@@ -227,33 +170,28 @@
                         <a-input
                                 style="margin: -5px 0"
                                 :value="text"
-                                @change="e => handleChange(e.target.value, record.key, col)"
                                 v-else
                         />
 
                     </div>
                 </template>
-                <template slot="operation" slot-scope="text, record">
+                <template slot="operation" slot-scope="text, record, index">
                     <a-popconfirm
                             v-if="responseColumns.length"
-                            title="Sure to delete?"
-                            @confirm="() => onDelete(record.key)"
                     >
-                        <a-icon type="minus" />
+                        <a-icon type="minus" @click="handleDeleteResponse(index)"/>
                     </a-popconfirm>
-                    <a-icon type="plus" />
+                    <a-icon type="plus" @click="handleAddResponse(index)"/>
                 </template>
-            </a-table>
-     </div>
-                </a-collapse-panel>
-
+                        <a-icon type="plus" slot="footer" v-if="responseDataSource.length<=0" @click="handleAddResponse(0)"/>
+                    </a-table>
+                </div>
+            </a-collapse-panel>
         </a-collapse>
-                    <a-button type="primary">
-                    提交
-                </a-button>
-            <a-button style="margin-left: 10px;">
-                    取消
-                </a-button>
+        <a-form-model-item :wrapper-col="{ span: 8, offset: 8 }">
+            <a-button type="primary">提交</a-button>
+            <a-button style="margin-left: 10px;">取消</a-button>
+        </a-form-model-item>
     </a-form-model>
 
 </template>
@@ -309,7 +247,12 @@
                 title: 'value',
                 dataIndex: 'value',
                 scopedSlots: { customRender: 'value' },
-            }
+            },
+            {
+                title: 'operation',
+                dataIndex: 'operation',
+                scopedSlots: { customRender: 'operation' },
+            },
         ]
         private setuphooksColumns = [
             {
@@ -322,12 +265,17 @@
                 title: '所属数据库',
                 dataIndex: 'database',
                 scopedSlots: { customRender: 'database' },
-            }
+            },
+            {
+                title: 'operation',
+                dataIndex: 'operation',
+                scopedSlots: { customRender: 'operation' },
+            },
         ]
         private resHeaderColumns = [
             {
                 title: 'key',
-                dataIndex: 'key',
+                dataIndex: 'keyName',
                 width: '15%',
                 scopedSlots: {customRender: 'key'},
             },
@@ -335,12 +283,17 @@
                 title: 'value',
                 dataIndex: 'value',
                 scopedSlots: { customRender: 'value' },
+            },
+            {
+                title: 'operation',
+                dataIndex: 'operation',
+                scopedSlots: { customRender: 'operation' },
             },
         ]
         private resParamsColumns = [
             {
                 title: 'key',
-                dataIndex: 'key',
+                dataIndex: 'keyName',
                 width: '15%',
                 scopedSlots: {customRender: 'key'},
             },
@@ -348,6 +301,11 @@
                 title: 'value',
                 dataIndex: 'value',
                 scopedSlots: { customRender: 'value' },
+            },
+            {
+                title: 'operation',
+                dataIndex: 'operation',
+                scopedSlots: { customRender: 'operation' },
             },
         ]
         private responseColumns = [
@@ -371,7 +329,12 @@
                 title: 'expected',
                 dataIndex: 'expected',
                 scopedSlots: { customRender: 'expected' },
-            }
+            },
+            {
+                title: 'operation',
+                dataIndex: 'operation',
+                scopedSlots: { customRender: 'operation' },
+            },
         ]
         private variablesDataSource=[
             {
@@ -392,12 +355,12 @@
         private mounted():void {
             this.filteredOptions();
         }
+
         @Watch("selectedItems")
         private  filteredOptions(): string[]{
             return this.notSelectedItems = this.options.filter(o => !this.selectedItems.includes(o));
 
         }
-
         private handleChange(selectedItems: string[]): void{
             this.selectedItems = selectedItems;
         }
@@ -405,7 +368,7 @@
         private handleAddVariables(index: number): void{
             console.log(index);
             const newData = {
-                key: '3',
+                key: String(this.variablesDataSource.length),
                 name: '',
                 type: '',
                 value: '',
@@ -417,6 +380,74 @@
         private handleDeleteVariables(index: number): void{
             console.log(index);
             this.variablesDataSource.splice(index,1);
+        }
+
+        private handleAddParameters(index: number): void {
+            const newData = {
+                key: String(this.parametersDataSource.length),
+                name: '',
+                value: ''
+            };
+            this.parametersDataSource.splice(index+1,0,newData);
+        }
+
+        private handleDeleteParameters(index: number): void {
+            this.parametersDataSource.splice(index, 1);
+        }
+
+        private handleAddSetuphooks(index: number): void {
+            const newData = {
+                key: String(this.setuphooksDataSource.length),
+                sql: '',
+                database: ''
+            };
+            this.setuphooksDataSource.splice(index+1,0,newData);
+        }
+
+        private handleDeleteSetuphooks(index: number): void {
+            this.setuphooksDataSource.splice(index,1);
+        }
+
+        private handleAddResHeader(index: number): void {
+            const newData = {
+                key: String(this.resHeaderDataSource.length),
+                keyName: '',
+                value: ''
+            };
+            this.resHeaderDataSource.splice(index+1,0,newData);
+        }
+
+        private handleDeleteResHeader(index: number): void {
+            this.resHeaderDataSource.splice(index,1);
+        }
+
+
+        private handleAddResParams(index: number): void {
+            const newData = {
+                key: String(this.resParamsDataSource.length),
+                keyName: '',
+                value: ''
+            };
+            this.resParamsDataSource.splice(index+1,0,newData);
+        }
+
+        private handleDeleteResParams(index: number): void {
+            this.resParamsDataSource.splice(index,1);
+        }
+
+        private handleAddResponse(index: number): void {
+            const newData = {
+                key: String(this.responseDataSource.length),
+                name: '',
+                type: '',
+                comparator: '',
+                expected: ''
+            };
+            this.responseDataSource.splice(index+1,0,newData);
+        }
+
+        private handleDeleteResponse(index: number): void {
+            this.responseDataSource.splice(index,1);
         }
     }
 
