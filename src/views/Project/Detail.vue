@@ -23,22 +23,22 @@
                         :data-source="interInfoOne.testcaseInfos"
                         :pagination="false" rowKey="caseId"
                 >
-            <span slot="operation" slot-scope="text" class="table-operation">
-        <a>编辑</a>
-        <a>运行</a>
-        <a-dropdown>
-          <a-menu slot="overlay">
-            <a-menu-item>
-              删除
-            </a-menu-item>
-            <a-menu-item>
-              复制
-            </a-menu-item>
-          </a-menu>
-          <a>···<a-icon type="down" /> </a>
-        </a-dropdown>
-      </span>
-                    <a-button slot="footer" class="addCaseBtn">添加</a-button>
+            <span slot="operation" slot-scope="testcaseInfoOne" class="table-operation">
+                <a>编辑</a>
+                <a>运行</a>
+                <a-dropdown>
+                <a-menu slot="overlay">
+                <a-menu-item @click="handleDeleteTestcase(testcaseInfoOne)">
+                删除
+                </a-menu-item>
+                <a-menu-item>
+                复制
+                </a-menu-item>
+                </a-menu>
+                <a>···<a-icon type="down" /> </a>
+                 </a-dropdown>
+            </span>
+                    <a-button slot="footer" class="addCaseBtn" @click=handleAddCase(interInfoOne.id)">添加</a-button>
                 </a-table>
             </a-table>
         </a-tab-pane>
@@ -135,7 +135,6 @@
             {title: '更新时间', dataIndex: 'caseUpdatedAt', key: 'caseUpdatedAt'},
             {
                 title: '操作',
-                dataIndex: 'operation',
                 key: 'operation',
                 scopedSlots: {customRender: 'operation'},
             },
@@ -144,6 +143,8 @@
         private mounted(): void {
             this.moduleList();
         }
+
+
 
         private moduleList(): void{
             getModuleList(Number(this.proEnv), this.repositoryId).then(
@@ -201,6 +202,18 @@
 
         private handleCancel(): void{
             this.visible = false;
+        }
+
+        private handleAddCase(id:number): void{
+            this.$router.push({
+                path:`/addcase/${id}`
+
+
+            });
+        }
+
+        private handleDeleteTestcase(text:any): void{
+            console.log(text);
         }
 
     }
