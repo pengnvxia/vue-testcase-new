@@ -30,9 +30,13 @@ const project: RouteConfig[] = [{
         },
         {
             path: 'addcase/:id',
-            name: 'addcase',
             meta: {title:'添加用例'},
             component: ()=> import('@/views/Case/AddCase.vue')
+        },
+        {
+            path: 'editcase/:id',
+            meta: {title:'编辑用例'},
+            component: ()=> import('@/views/Case/EditCase.vue')
         }
 
         // {

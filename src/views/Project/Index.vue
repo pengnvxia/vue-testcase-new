@@ -99,7 +99,7 @@
                         (result: any) => {
                             if (result.errcode === "0") {
                                 that.$message.success("删除成功!");
-                                that.$router.push({path:'/index'});
+                                //缺少重新加载语句
                             }
                         },
                         (err: any) => {

@@ -3,21 +3,21 @@
         <div>
             <a-row>
                 <a-col :span="12">
-            <a-form-model-item prop="testcaseName" label="用例名称：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
-                <a-input placeholder="输入名称" v-model="testcaseForm.testcaseName"></a-input>
-            </a-form-model-item>
+                    <a-form-model-item prop="testcaseName" label="用例名称：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
+                        <a-input placeholder="输入名称" v-model="testcaseForm.testcaseName"></a-input>
+                    </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-            <a-form-model-item prop="projectName" label="环境：" :label-col="{ span: 2 }" :wrapper-col="{ span:10 }">
-                <a-select v-model="testcaseForm.envId">
-                    <a-select-option :value="1">
-                        测试
-                    </a-select-option>
-                    <a-select-option :value="2">
-                        生产
-                    </a-select-option>
-                </a-select>
-            </a-form-model-item>
+                    <a-form-model-item prop="projectName" label="环境：" :label-col="{ span: 2 }" :wrapper-col="{ span:10 }">
+                        <a-select v-model="testcaseForm.envId">
+                            <a-select-option :value="1">
+                                测试
+                            </a-select-option>
+                            <a-select-option :value="2">
+                                生产
+                            </a-select-option>
+                        </a-select>
+                    </a-form-model-item>
                 </a-col>
             </a-row>
             <a-form-model-item label="配置项：" :label-col="{ span: 2 }" :wrapper-col="{ span: 5 }">
@@ -30,37 +30,37 @@
             <a-collapse-panel  key="variables" header="Variables">
                 <a-table bordered :data-source="testcaseForm.variables" :columns="variablesColumns" :pagination="false">
                     <template v-for="col in ['name', 'type', 'value', 'database']" :slot="col" slot-scope="text, record, index">
-                    <div :key="col">
-                        <a-form-model-item prop="inputText" v-if="col == 'name'">
-                            <a-input v-model="record.name"/>
-                        </a-form-model-item>
-                        <a-form-model-item v-else-if="col == 'value'">
-                            <a-input v-model="record.value"/>
-                        </a-form-model-item>
-                        <a-form-model-item v-else-if="col == 'type'">
-                        <a-select style="width: 100px;" defaultValue="String" v-model="record.type">
-                            <a-select-option value="String">String</a-select-option>
-                            <a-select-option value="Number">Number</a-select-option>
-                            <a-select-option value="Boolean">Boolean</a-select-option>
-                            <a-select-option value="Sql">Sql</a-select-option>
-                            <a-select-option value="Object">Object</a-select-option>
-                            <a-select-option value="Array">Array</a-select-option>
-                            <a-select-option value="Function">Function</a-select-option>
-                            <a-select-option value="RegExp">RegExp</a-select-option>
-                            <a-select-option value="Null">Null</a-select-option>
-                        </a-select>
-                        </a-form-model-item>
-                        <a-form-model-item v-else>
-                            <a-select style="width: 100px;" :defaultValue="1" v-model="record.databaseId">
-                                <a-select-option :value="1">paper</a-select-option>
-                            </a-select>
-                        </a-form-model-item>
-                    </div>
+                        <div :key="col">
+                            <a-form-model-item prop="inputText" v-if="col == 'name'">
+                                <a-input v-model="record.name"/>
+                            </a-form-model-item>
+                            <a-form-model-item v-else-if="col == 'value'">
+                                <a-input v-model="record.value"/>
+                            </a-form-model-item>
+                            <a-form-model-item v-else-if="col == 'type'">
+                                <a-select style="width: 100px;" defaultValue="String" v-model="record.type">
+                                    <a-select-option value="String">String</a-select-option>
+                                    <a-select-option value="Number">Number</a-select-option>
+                                    <a-select-option value="Boolean">Boolean</a-select-option>
+                                    <a-select-option value="Sql">Sql</a-select-option>
+                                    <a-select-option value="Object">Object</a-select-option>
+                                    <a-select-option value="Array">Array</a-select-option>
+                                    <a-select-option value="Function">Function</a-select-option>
+                                    <a-select-option value="RegExp">RegExp</a-select-option>
+                                    <a-select-option value="Null">Null</a-select-option>
+                                </a-select>
+                            </a-form-model-item>
+                            <a-form-model-item v-else>
+                                <a-select style="width: 100px;" :defaultValue="1" v-model="record.databaseId">
+                                    <a-select-option :value="1">paper</a-select-option>
+                                </a-select>
+                            </a-form-model-item>
+                        </div>
                     </template>
                     <template slot="operation" slot-scope="text, record, index">
-                <a-icon type="minus" @click="handleDeleteVariables(index)"/>
-                <a-icon type="plus" @click="handleAddVariables(index)"/>
-            </template>
+                        <a-icon type="minus" @click="handleDeleteVariables(index)"/>
+                        <a-icon type="plus" @click="handleAddVariables(index)"/>
+                    </template>
                     <a-icon type="plus" slot="footer" v-if="testcaseForm.variables.length<=0" @click="handleAddVariables(0)"/>
                 </a-table>
             </a-collapse-panel>
@@ -110,145 +110,145 @@
             <a-collapse-panel  key="request&response" header="Request&Response">
                 <div>
                     <h3 class="title">
-            Request
-        </h3>
+                        Request
+                    </h3>
                     <a-tabs default-active-key="1">
                         <a-tab-pane key="1" tab="headers">
-                <a-table bordered :data-source="testcaseForm.reqHeaders" :columns="resHeaderColumns" :pagination="false">
-                    <template
-                            v-for="col in ['key', 'value']"
-                            :slot="col"
-                            slot-scope="text, record, index"
+                            <a-table bordered :data-source="testcaseForm.reqHeaders" :columns="resHeaderColumns" :pagination="false">
+                                <template
+                                        v-for="col in ['key', 'value']"
+                                        :slot="col"
+                                        slot-scope="text, record, index"
 
-                    >
-                        <div :key="col">
-                            <a-form-model-item prop="inputText">
-                            <a-input v-model="record.keyName" v-if="col =='key'"/>
-                            <input v-model="record.value" v-else/>
-                            </a-form-model-item>
-                        </div>
-                    </template>
-                    <template slot="operation" slot-scope="text, record, index">
-                        <a-popconfirm
-                                v-if="resHeaderColumns.length"
-                        >
-                            <a-icon type="minus" @click="handleDeleteResHeader(index)"/>
-                        </a-popconfirm>
-                        <a-icon type="plus" @click="handleAddResHeader(index)"/>
-                    </template>
-                    <a-icon type="plus" slot="footer" v-if="testcaseForm.reqHeaders.length<=0" @click="handleAddResHeader(0)"/>
+                                >
+                                    <div :key="col">
+                                        <a-form-model-item prop="inputText">
+                                            <a-input v-model="record.keyName" v-if="col =='key'"/>
+                                            <input v-model="record.value" v-else/>
+                                        </a-form-model-item>
+                                    </div>
+                                </template>
+                                <template slot="operation" slot-scope="text, record, index">
+                                    <a-popconfirm
+                                            v-if="resHeaderColumns.length"
+                                    >
+                                        <a-icon type="minus" @click="handleDeleteResHeader(index)"/>
+                                    </a-popconfirm>
+                                    <a-icon type="plus" @click="handleAddResHeader(index)"/>
+                                </template>
+                                <a-icon type="plus" slot="footer" v-if="testcaseForm.reqHeaders.length<=0" @click="handleAddResHeader(0)"/>
 
-                </a-table>
-            </a-tab-pane>
+                            </a-table>
+                        </a-tab-pane>
                         <a-tab-pane key="2" tab="params" force-render>
-                <a-table bordered :data-source="testcaseForm.reqParams" :columns="resParamsColumns" :pagination="false">
-                    <template
-                            v-for="col in ['key', 'value']"
-                            :slot="col"
-                            slot-scope="text, record, index"
+                            <a-table bordered :data-source="testcaseForm.reqParams" :columns="resParamsColumns" :pagination="false">
+                                <template
+                                        v-for="col in ['key', 'value']"
+                                        :slot="col"
+                                        slot-scope="text, record, index"
 
-                    >
-                        <div :key="col">
-                            <a-form-model-item prop="inputText">
-                            <a-input
-                                    v-model="record.keyName" v-if="col == 'key'"/>
-                                <a-input v-model="record.value" v-if="col == 'value'"/>
-                             </a-form-model-item>
+                                >
+                                    <div :key="col">
+                                        <a-form-model-item prop="inputText">
+                                            <a-input
+                                                    v-model="record.keyName" v-if="col == 'key'"/>
+                                            <a-input v-model="record.value" v-if="col == 'value'"/>
+                                        </a-form-model-item>
 
-                        </div>
-                    </template>
-                    <template slot="operation" slot-scope="text, record, index">
-                        <a-popconfirm
-                                v-if="resParamsColumns.length"
-                        >
-                            <a-icon type="minus" @click="handleDeleteResParams(index)"/>
-                        </a-popconfirm>
-                        <a-icon type="plus" @click="handleAddResParams(index)"/>
-                    </template>
-                    <a-icon type="plus" slot="footer" v-if="testcaseForm.reqParams.length<=0" @click="handleAddResParams(0)"/>
+                                    </div>
+                                </template>
+                                <template slot="operation" slot-scope="text, record, index">
+                                    <a-popconfirm
+                                            v-if="resParamsColumns.length"
+                                    >
+                                        <a-icon type="minus" @click="handleDeleteResParams(index)"/>
+                                    </a-popconfirm>
+                                    <a-icon type="plus" @click="handleAddResParams(index)"/>
+                                </template>
+                                <a-icon type="plus" slot="footer" v-if="testcaseForm.reqParams.length<=0" @click="handleAddResParams(0)"/>
 
-                </a-table>
+                            </a-table>
 
-            </a-tab-pane>
+                        </a-tab-pane>
                         <a-tab-pane key="3" tab="requestBody">
                             <a-form-model-item>
-                                <a-textarea placeholder="请输入..." :rows="6" v-model="testcaseForm.requestBody"/>
+                                <a-textarea placeholder="请输入..." :rows="6" v-model="testcaseForm.reqBody.requestBody"/>
                             </a-form-model-item>
                         </a-tab-pane>
                     </a-tabs>
                 </div>
                 <div>
                     <h3 class="title">
-             Response
-         </h3>
+                        Response
+                    </h3>
                     <a-table bordered :data-source="testcaseForm.responses" :columns="responseColumns" :pagination="false">
-                <template
-                        v-for="col in ['name', 'type', 'comparator', 'expected']"
-                        :slot="col"
-                        slot-scope="text, record, index"
+                        <template
+                                v-for="col in ['name', 'type', 'comparator', 'expected']"
+                                :slot="col"
+                                slot-scope="text, record, index"
 
-                >
-                    <div :key="col">
-                        <a-form-model-item v-if="col == 'comparator'">
-                        <a-select style="width: 100px;" defaultValue="=" v-model="record.comparator">
-                            <a-select-option value="=">
-                                =
-                            </a-select-option>
-                            <a-select-option value="<">
-                                <
-                            </a-select-option>
-                            <a-select-option value=">">
-                                >
-                            </a-select-option>
-                            <a-select-option value="<=">
-                                <=
-                            </a-select-option>
-                            <a-select-option value=">=">
-                                >=
-                            </a-select-option>
-                            <a-select-option value="!=">
-                                !=
-                            </a-select-option>
-                            <a-select-option value="contain">
-                                包含
-                            </a-select-option>
-                            <a-select-option value="notcontain">
-                                不包含
-                            </a-select-option>
-                        </a-select>
-                        </a-form-model-item>
-                        <a-form-model-item v-else-if="col == 'type'">
-                                <a-select style="width: 100px;" defaultValue="String" v-model="record.type">
-                                    <a-select-option value="String">String</a-select-option>
-                                    <a-select-option value="Number">Number</a-select-option>
-                                    <a-select-option value="Boolean">Boolean</a-select-option>
-                                    <a-select-option value="Sql">Sql</a-select-option>
-                                    <a-select-option value="Object">Object</a-select-option>
-                                    <a-select-option value="Array">Array</a-select-option>
-                                    <a-select-option value="Function">Function</a-select-option>
-                                    <a-select-option value="RegExp">RegExp</a-select-option>
-                                    <a-select-option value="Null">Null</a-select-option>
-                                </a-select>
-                        </a-form-model-item>
-                        <a-form-model-item prop="inputText" v-else>
-                            <a-input
-                                    v-model="record.name" v-if="col == 'name'"
-                            />
-                            <a-input
-                                    v-model="record.expected" v-else
-                            />
-                        </a-form-model-item>
+                        >
+                            <div :key="col">
+                                <a-form-model-item v-if="col == 'comparator'">
+                                    <a-select style="width: 100px;" defaultValue="=" v-model="record.comparator">
+                                        <a-select-option value="=">
+                                            =
+                                        </a-select-option>
+                                        <a-select-option value="<">
+                                            <
+                                        </a-select-option>
+                                        <a-select-option value=">">
+                                            >
+                                        </a-select-option>
+                                        <a-select-option value="<=">
+                                            <=
+                                        </a-select-option>
+                                        <a-select-option value=">=">
+                                            >=
+                                        </a-select-option>
+                                        <a-select-option value="!=">
+                                            !=
+                                        </a-select-option>
+                                        <a-select-option value="contain">
+                                            包含
+                                        </a-select-option>
+                                        <a-select-option value="notcontain">
+                                            不包含
+                                        </a-select-option>
+                                    </a-select>
+                                </a-form-model-item>
+                                <a-form-model-item v-else-if="col == 'type'">
+                                    <a-select style="width: 100px;" defaultValue="String" v-model="record.type">
+                                        <a-select-option value="String">String</a-select-option>
+                                        <a-select-option value="Number">Number</a-select-option>
+                                        <a-select-option value="Boolean">Boolean</a-select-option>
+                                        <a-select-option value="Sql">Sql</a-select-option>
+                                        <a-select-option value="Object">Object</a-select-option>
+                                        <a-select-option value="Array">Array</a-select-option>
+                                        <a-select-option value="Function">Function</a-select-option>
+                                        <a-select-option value="RegExp">RegExp</a-select-option>
+                                        <a-select-option value="Null">Null</a-select-option>
+                                    </a-select>
+                                </a-form-model-item>
+                                <a-form-model-item prop="inputText" v-else>
+                                    <a-input
+                                            v-model="record.name" v-if="col == 'name'"
+                                    />
+                                    <a-input
+                                            v-model="record.expected" v-else
+                                    />
+                                </a-form-model-item>
 
-                    </div>
-                </template>
-                <template slot="operation" slot-scope="text, record, index">
-                    <a-popconfirm
-                            v-if="responseColumns.length"
-                    >
-                        <a-icon type="minus" @click="handleDeleteResponse(index)"/>
-                    </a-popconfirm>
-                    <a-icon type="plus" @click="handleAddResponse(index)"/>
-                </template>
+                            </div>
+                        </template>
+                        <template slot="operation" slot-scope="text, record, index">
+                            <a-popconfirm
+                                    v-if="responseColumns.length"
+                            >
+                                <a-icon type="minus" @click="handleDeleteResponse(index)"/>
+                            </a-popconfirm>
+                            <a-icon type="plus" @click="handleAddResponse(index)"/>
+                        </template>
                         <a-icon type="plus" slot="footer" v-if="testcaseForm.responses.length<=0" @click="handleAddResponse(0)"/>
                     </a-table>
                 </div>
@@ -263,7 +263,7 @@
 </template>
 <script lang="ts">
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-    import { addTestcase,interfaceInfo } from '@/services/testcase/index';
+    import { editTestcase,testcaseInfo } from '@/services/testcase/index';
 
     interface Testcase {
         testcaseName: string,
@@ -276,6 +276,7 @@
         reqHeaders: any[],
         reqParams: any[],
         responses: any[]
+        reqBody: {}
     }
 
     // interface Variable {
@@ -331,7 +332,9 @@
             setuphooks: [],
             reqHeaders: [],
             reqParams: [],
-            responses: []
+            responses: [],
+            reqBody: {}
+
         };
 
         private selectedItems: string[] = ['Apples'];
@@ -369,9 +372,9 @@
         private parametersColumns= [
             {
                 title: 'name',
-                dataIndex: 'keyName',
+                dataIndex: 'keyNname',
                 width: '15%',
-                scopedSlots: {customRender: 'KeyName'},
+                scopedSlots: {customRender: 'name'},
             },
             {
                 title: 'value',
@@ -602,7 +605,7 @@
         }
 
         private getInterfaceInfo():void {
-            interfaceInfo(Number(this.$route.params.id)).then(
+            testcaseInfo(Number(this.$route.params.id)).then(
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.addKey(result.retval);
@@ -632,10 +635,23 @@
                 }
 
             }
+            if(testcase.variables.length>0){
+                for(var i=0;i<testcase.variables.length;i++){
+                    testcase.variables[i].key=i;
+                }
+            }
+            if(testcase.parameters.length>0){
+                for(var i=0;i<testcase.parameters.length;i++){
+                    testcase.parameters[i].key=i;
+                }
+            }
+            if(testcase.setuphooks.length>0){
+                for(var i=0;i<testcase.setuphooks.length;i++){
+                    testcase.setuphooks[i].key=i;
+                }
+            }
             this.testcaseForm=testcase;
-            this.testcaseForm.variables=[];
-            this.testcaseForm.setuphooks=[];
-            this.testcaseForm.parameters=[];
+            console.log(this.testcaseForm,555);
             return this.testcaseForm;
 
         }
@@ -643,15 +659,16 @@
         private submit(): void {
 
             this.processTestcaseForm(this.testcaseForm);
-            addTestcase(Number(this.$route.params.id),this.testcaseForm).then(
+            console.log(this.testcaseForm,333);
+            editTestcase(Number(this.$route.params.id),this.testcaseForm).then(
                 (result: any) => {
                     if (result.errcode === "0") {
-                        this.$message.success("提交成功");
+                        this.$message.success("更新成功");
                         this.$router.go(-1);
                     }
                 },
                 (err: any) => {
-                    this.$message;
+                    this.$message.error(err.errmsg);
                 }
             );
         }
@@ -724,7 +741,7 @@
     }
     .btn {
         margin-top: 50px;
-        /*background-color: transparent;*/
+        background-color: transparent;
     }
     .btn .ant-form-item-children{
         position: absolute;

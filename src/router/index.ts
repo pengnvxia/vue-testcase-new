@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import project from './project';
+import config from './config';
 
 
 // //\ 屏蔽相同路由时报错
@@ -17,6 +18,7 @@ export const router: Router = new Router({
   base: process.env.BASE_URL,
   routes: [
       ...project,
+      ...config,
     {
       path: '/',
       redirect: '/home',

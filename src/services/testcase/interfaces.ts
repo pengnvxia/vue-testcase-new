@@ -12,6 +12,7 @@ export interface Testcase {
 }
 
 export interface Variable {
+    id?: number,
     name: string,
     type: string,
     value: string,
@@ -19,27 +20,32 @@ export interface Variable {
 }
 
 export interface Parameter {
+    id?: number,
     keyName: string,
     value: string
 }
 
 export interface Setuphook {
+    id?: number,
     sql: string,
     databaseId: number
 }
 
 export interface ReqHeader {
+    id?: number,
     keyName: string,
     value: string
 
 }
 
 export interface ReqParam {
+    id?: number,
     keyName: string,
     value: string
 }
 
 export interface Response {
+    id?: number,
     name: string,
     type: string,
     comparator: string,

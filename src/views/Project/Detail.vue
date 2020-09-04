@@ -12,6 +12,9 @@
     <a-tabs @change="interfaceList" v-model="activeKey">
         <a-tab-pane :key="moduleItem.id" v-for="moduleItem in modules" :tab="moduleItem.moduleName">
             <a-table :columns="columns" :data-source="interInfo" class="components-table-demo-nested" rowKey="id">
+                <template slot="updatedAt" slot-scope="updatedAt">
+                    {{ updatedAt | formatDate }}
+                </template>
         <span slot="operation" slot-scope="text">
         <a>编辑</a>
         <a>删除</a>
@@ -23,12 +26,15 @@
                         :data-source="interInfoOne.testcaseInfos"
                         :pagination="false" rowKey="caseId"
                 >
+                    <template slot="caseUpdatedAt" slot-scope="caseUpdatedAt">
+                        {{ caseUpdatedAt | formatDate }}
+                    </template>
             <span slot="operation" slot-scope="testcaseInfoOne" class="table-operation">
-                <a>编辑</a>
+                <a @click="handleEditTestcase(testcaseInfoOne.caseId)">编辑</a>
                 <a>运行</a>
                 <a-dropdown>
                 <a-menu slot="overlay">
-                <a-menu-item @click="handleDeleteTestcase(testcaseInfoOne)">
+                <a-menu-item @click="handleDeleteTestcase(testcaseInfoOne.caseId)">
                 删除
                 </a-menu-item>
                 <a-menu-item>
@@ -38,17 +44,10 @@
                 <a>···<a-icon type="down" /> </a>
                  </a-dropdown>
             </span>
-                    <a-button slot="footer" class="addCaseBtn" @click=handleAddCase(interInfoOne.id)">添加</a-button>
+                    <a-button slot="footer" class="addCaseBtn" @click="handleAddCase(interInfoOne.id)">添加</a-button>
                 </a-table>
             </a-table>
         </a-tab-pane>
-<!--        <a-tab-pane key="2" tab="Tab 2">-->
-<!--            Content of Tab Pane 2-->
-<!--        </a-tab-pane>-->
-<!--        <a-tab-pane :key="-1">-->
-<!--            <a-icon slot="tab" type="plus" />-->
-
-<!--        </a-tab-pane>-->
         <a-button slot="tabBarExtraContent" @click=" visible = !visible">
             添加模块
         </a-button>
@@ -76,6 +75,7 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { getModuleList, getInterfaceList, addModule } from '@/services/project/index';
+    import { deleteTestcase } from '@/services/testcase/index'
 
     interface Mod{
         id: number;
@@ -123,7 +123,7 @@
             {title: '接口名称', dataIndex: 'name', key: 'name'},
             {title: '地址', dataIndex: 'url', key: 'url'},
             {title: '最后编辑人', dataIndex: 'updatedBy', key: 'updatedBy'},
-            {title: '更新时间', dataIndex: 'updatedAt', key: 'updatedAt'},
+            {title: '更新时间', dataIndex: 'updatedAt', key: 'updatedAt',scopedSlots: {customRender: 'updatedAt'}},
             {title: '操作', key: 'operation', scopedSlots: {customRender: 'operation'}},
         ];
         // private data = [{key: 1,name: 'Screem',address: 'iOS',updator: 'Jack',updatedAt: '2014-12-24 23:12:00'}];
@@ -132,7 +132,7 @@
             {title: '用例名称', dataIndex: 'caseName', key: 'caseName'},
             {title: '所属环境', dataIndex: 'caseEnvId', key: 'caseEnvId'},
             {title: '最后编辑人', dataIndex: 'caseUpdatedBy', key: 'caseUpdatedBy'},
-            {title: '更新时间', dataIndex: 'caseUpdatedAt', key: 'caseUpdatedAt'},
+            {title: '更新时间', dataIndex: 'caseUpdatedAt', key: 'caseUpdatedAt',scopedSlots:{customRender:'caseUpdatedAt'}},
             {
                 title: '操作',
                 key: 'operation',
@@ -152,7 +152,9 @@
                     if (result.errcode === "0") {
                         this.modules = result.retval;
                         if(this.modules.length>0){
-                            this.activeKey = this.modules[this.modules.length-1].id;
+                            if(this.activeKey === 0){
+                                this.activeKey = this.modules[this.modules.length-1].id;
+                            }
                             this.interfaceList(this.activeKey);
                         }
 
@@ -212,8 +214,25 @@
             });
         }
 
-        private handleDeleteTestcase(text:any): void{
-            console.log(text);
+        private handleEditTestcase(id: number): void{
+            this.$router.push({
+                path:`/editcase/${id}`
+            })
+        }
+
+        private handleDeleteTestcase(id:number): void{
+            deleteTestcase(id).then(
+                (result: any) => {
+                    if (result.errcode === "0"){
+                        this.$message.success("删除成功");
+                        this.moduleList();
+                    }
+                },
+                (err: any) => {
+                    this.$message.error(err.errmsg);
+                }
+
+            );
         }
 
     }
