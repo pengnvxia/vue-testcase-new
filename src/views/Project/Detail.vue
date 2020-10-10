@@ -31,7 +31,7 @@
                     </template>
             <span slot="operation" slot-scope="testcaseInfoOne" class="table-operation">
                 <a @click="handleEditTestcase(testcaseInfoOne.caseId)">编辑</a>
-                <a>运行</a>
+                <a @click="handleRunTestcase(testcaseInfoOne.caseId)">运行</a>
                 <a-dropdown>
                 <a-menu slot="overlay">
                 <a-menu-item @click="handleDeleteTestcase(testcaseInfoOne.caseId)">
@@ -75,7 +75,7 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { getModuleList, getInterfaceList, addModule } from '@/services/project/index';
-    import { deleteTestcase } from '@/services/testcase/index'
+    import {deleteTestcase, runtestcase} from '@/services/testcase/index'
 
     interface Mod{
         id: number;
@@ -106,6 +106,7 @@
         private activeKey: number = 0;
         private visible: boolean = false;
         private loading: boolean = false;
+        private flag: boolean = false;
         private moduleForm: any={
             moduleName: "",
             description: ""
@@ -218,6 +219,45 @@
             this.$router.push({
                 path:`/editcase/${id}`
             })
+        }
+
+        private handleRunTestcase(caseId: number): void{
+            var caseIds: number[] = [];
+            caseIds.push(caseId);
+            var that: any=this;
+            this.$confirm({
+                title: `需要在运行用例后删除项目数据信息吗？`,
+                content: '删除后不能查看数据!',
+                onOk(){
+                    that.flag=true;
+                    runtestcase(caseIds,Number(that.$route.params.id),Number(that.proEnv),that.flag).then(
+
+                        (result: any) => {
+                            if (result.errcode === "0"){
+                                that.$message.success("用例正在运行，请稍后查看结果！")
+                            }
+                        },
+                        (err: any) => {
+                            that.$message.error(err.errmsg);
+                        }
+                    )
+                },
+                onCancel(){
+                    runtestcase(caseIds,Number(that.$route.params.id),Number(that.proEnv),that.flag).then(
+
+                        (result: any) => {
+                            if (result.errcode === "0"){
+                                that.$message.success("用例正在运行，请稍后查看结果！")
+                            }
+                        },
+                        (err: any) => {
+                            that.$message.error(err.errmsg);
+                        }
+                    )
+                }
+
+            });
+
         }
 
         private handleDeleteTestcase(id:number): void{

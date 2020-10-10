@@ -518,7 +518,6 @@
         }
 
         private handleAddVariables(index: number): void{
-            console.log(index);
             const newData = {
                 key: (new Date()).valueOf(),
                 name: '',
@@ -527,7 +526,6 @@
                 database: '',
             };
             this.testcaseForm.variables.splice(index+1,0,newData);
-            console.log(this.testcaseForm.variables,222);
         }
 
         private handleDeleteVariables(index: number): void{
@@ -535,14 +533,12 @@
         }
 
         private handleAddParameters(index: number): void {
-            console.log(index);
             const newData = {
                 key: (new Date()).valueOf(),
                 keyName: '',
                 value: ''
             };
             this.testcaseForm.parameters.splice(index+1,0,newData);
-            console.log(this.testcaseForm.parameters);
         }
 
         private handleDeleteParameters(index: number): void {
@@ -618,40 +614,39 @@
         }
 
         private addKey(testcase: Testcase): Testcase {
-            if(testcase.reqHeaders.length>0){
+            if(testcase.hasOwnProperty("reqHeaders") && testcase.reqHeaders.length>0){
                 for(var i=0;i<testcase.reqHeaders.length;i++){
                     testcase.reqHeaders[i].key=i;
                 }
             }
-            if(testcase.reqParams.length>0){
+            if(testcase.hasOwnProperty("reqParams") && testcase.reqParams.length>0){
                 for(var i=0;i<testcase.reqParams.length;i++){
                     testcase.reqParams[i].key=i;
                 }
 
             }
-            if(testcase.responses.length>0){
+            if(testcase.hasOwnProperty("responses") && testcase.responses.length>0){
                 for(var i=0;i<testcase.responses.length;i++){
                     testcase.responses[i].key=i;
                 }
 
             }
-            if(testcase.variables.length>0){
+            if(testcase.hasOwnProperty("variables") && testcase.variables.length>0){
                 for(var i=0;i<testcase.variables.length;i++){
                     testcase.variables[i].key=i;
                 }
             }
-            if(testcase.parameters.length>0){
+            if(testcase.hasOwnProperty("parameters") && testcase.parameters.length>0){
                 for(var i=0;i<testcase.parameters.length;i++){
                     testcase.parameters[i].key=i;
                 }
             }
-            if(testcase.setuphooks.length>0){
+            if(testcase.hasOwnProperty("setuphooks") && testcase.setuphooks.length>0){
                 for(var i=0;i<testcase.setuphooks.length;i++){
                     testcase.setuphooks[i].key=i;
                 }
             }
             this.testcaseForm=testcase;
-            console.log(this.testcaseForm,555);
             return this.testcaseForm;
 
         }
@@ -659,7 +654,6 @@
         private submit(): void {
 
             this.processTestcaseForm(this.testcaseForm);
-            console.log(this.testcaseForm,333);
             editTestcase(Number(this.$route.params.id),this.testcaseForm).then(
                 (result: any) => {
                     if (result.errcode === "0") {

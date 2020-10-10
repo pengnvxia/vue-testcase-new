@@ -218,7 +218,7 @@
                         </a-select>
                         </a-form-model-item>
                         <a-form-model-item v-else-if="col == 'type'">
-                                <a-select style="width: 100px;" defaultValue="String" v-model="record.type">
+                                <a-select style="width: 100px;" defaultValue="String" v-model="record.type" @change="handleType(index,record.type,record.key)">
                                     <a-select-option value="String">String</a-select-option>
                                     <a-select-option value="Number">Number</a-select-option>
                                     <a-select-option value="Boolean">Boolean</a-select-option>
@@ -242,12 +242,12 @@
                     </div>
                 </template>
                 <template slot="operation" slot-scope="text, record, index">
-                    <a-popconfirm
-                            v-if="responseColumns.length"
-                    >
-                        <a-icon type="minus" @click="handleDeleteResponse(index)"/>
-                    </a-popconfirm>
-                    <a-icon type="plus" @click="handleAddResponse(index)"/>
+<!--                    <a-popconfirm-->
+<!--                            v-if="responseColumns.length"-->
+<!--                    >-->
+                        <a-icon type="minus" @click="handleDeleteResponse(index,record.key)"/>
+<!--                    </a-popconfirm>-->
+                    <a-icon type="plus" @click="handleAddResponse(index,record.key)"/>
                 </template>
                         <a-icon type="plus" slot="footer" v-if="testcaseForm.responses.length<=0" @click="handleAddResponse(0)"/>
                     </a-table>
@@ -331,7 +331,7 @@
             setuphooks: [],
             reqHeaders: [],
             reqParams: [],
-            responses: []
+            responses: [],
         };
 
         private selectedItems: string[] = ['Apples'];
@@ -515,7 +515,6 @@
         }
 
         private handleAddVariables(index: number): void{
-            console.log(index);
             const newData = {
                 key: (new Date()).valueOf(),
                 name: '',
@@ -524,7 +523,6 @@
                 database: '',
             };
             this.testcaseForm.variables.splice(index+1,0,newData);
-            console.log(this.testcaseForm.variables,222);
         }
 
         private handleDeleteVariables(index: number): void{
@@ -532,14 +530,12 @@
         }
 
         private handleAddParameters(index: number): void {
-            console.log(index);
             const newData = {
                 key: (new Date()).valueOf(),
                 keyName: '',
                 value: ''
             };
             this.testcaseForm.parameters.splice(index+1,0,newData);
-            console.log(this.testcaseForm.parameters);
         }
 
         private handleDeleteParameters(index: number): void {
@@ -585,20 +581,76 @@
         private handleDeleteResParams(index: number): void {
             this.testcaseForm.reqParams.splice(index,1);
         }
-        private handleAddResponse(index: number): void {
+        private handleAddResponse(index: number,key:number): void {
             const newData = {
                 // key: String(this.testcaseForm.responses.length),
                 key: (new Date()).valueOf(),
                 name: '',
                 type: '',
                 comparator: '',
-                expected: ''
+                expected: '',
             };
-            this.testcaseForm.responses.splice(index+1,0,newData);
+            var that=this;
+            this.testcaseForm.responses.forEach(function (value: any) {
+                that.addNewData(that.testcaseForm.responses,value,key,index);
+            })
+            // var that=this;
+            // this.testcaseForm.responses.forEach(function (value: any) {
+            //     if(value.key==key){
+            //         that.testcaseForm.responses.splice(index+1,0,newData);
+            //         console.log(123456);
+            //     }
+            //     if(value.hasOwnProperty("children")){
+            //         value.children.forEach(function (childrenValue: any) {
+            //             if(childrenValue.key==key){
+            //                 value.children.splice(index+1,0,newData);
+            //             }
+            //         })
+            //     }
+            // })
+            // this.testcaseForm.responses.splice(index+1,0,newData);
         }
 
-        private handleDeleteResponse(index: number): void {
+        private addNewData(previousValue:any,value:any,key:number,index:number): any{
+            const newData = {
+                // key: String(this.testcaseForm.responses.length),
+                key: (new Date()).valueOf(),
+                name: '',
+                type: '',
+                comparator: '',
+                expected: '',
+            };
+            if(value.key==key){
+                previousValue.splice(index+1,0,newData);
+            }else if (value.hasOwnProperty("children")) {
+                var that=this;
+                // this.addNewData(value,value.children,key,index);
+                value.children.forEach(function (childrenValue: any) {
+                    that.addNewData(value.children,childrenValue,key,index);
+                    // if(childrenValue.key==key){
+                    //     value.children.splice(index+1,0,newData);
+                    // }
+                })
+            }
+        }
+
+        private handleDeleteResponse(index: number,key: number): void {
+            var that= this;
+            this.testcaseForm.responses.forEach(function (value) {
+                that.deleteResponse(that.testcaseForm.responses,value,index,key)
+            })
             this.testcaseForm.responses.splice(index,1);
+        }
+
+        private deleteResponse(previousValue: any, value: any, index: number, key: number): void{
+            if(value.key==key){
+                previousValue.splice(index,1);
+            }else if(value.hasOwnProperty("children")){
+                var that=this;
+                value.children.forEach(function (childrenValue: any) {
+                    that.deleteResponse(value.children,childrenValue,index,key);
+                })
+            }
         }
 
         private getInterfaceInfo():void {
@@ -629,6 +681,15 @@
             if(testcase.responses.length>0){
                 for(var i=0;i<testcase.responses.length;i++){
                     testcase.responses[i].key=i;
+                    if(testcase.responses[i].type=="Array" || testcase.responses[i].type=="Object"){
+                        testcase.responses[i].children=[{
+                            key: (new Date()).valueOf()+i,
+                            name: '',
+                            type: '',
+                            comparator: '',
+                            expected: '',
+                        }]
+                    }
                 }
 
             }
@@ -684,18 +745,62 @@
                 })
             }
             if(testcase.responses.length>0){
-                testcase.responses.forEach(function (value) {
-                    delete value.key;
-                })
+                // testcase.responses.forEach(function (value) {
+                //     delete value.key;
+                // })
+                this.deleteKey(testcase.responses);
             }
 
             return this.testcaseForm;
+        }
+
+        private deleteKey(previousValue: any): void{
+            var that=this;
+            previousValue.forEach(function (value: any,index: number){
+                if(value.name == ''){
+                    delete previousValue[index];
+                }else {
+                    delete value.key;
+                    if (value.hasOwnProperty("children")) {
+                        that.deleteKey(value.children);
+                        console.log(value.children,101010);
+                        if(value.children==false){
+                            delete value.children;
+                        }
+                    }
+                }
+
+            });
         }
 
         private handleReset(): void{
             this.$router.go(-1);
         }
 
+        private handleType(index:number, type: string, key: number): void{
+            var that=this;
+            this.addType(that.testcaseForm.responses,type,key);
+        }
+
+        private addType(value: any, type: string, key: number): any{
+            const newData = [{
+                key: (new Date()).valueOf(),
+                name: '',
+                type: '',
+                comparator: '',
+                expected: '',
+            }];
+            var that=this;
+            value.forEach(function (value: any) {
+                if(value.key == key){
+                    if(type=="Array" || type=="Object"){
+                        value.children= newData;
+                    }
+                }else if (value.hasOwnProperty("children")) {
+                    that.addType(value.children,type,key);
+                }
+            })
+        }
 
     }
 </script>

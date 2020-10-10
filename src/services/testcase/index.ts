@@ -47,3 +47,17 @@ export function editTestcase(id: number, testcase: Testcase): AxiosPromise {
     };
     return Base(config);
 }
+
+export function runtestcase(caseIds: number[],projectId: number,envId: number,flag: boolean):  AxiosPromise {
+    const config: AxiosRequestConfig = {
+        url: `${PROJECTSERVER}/run`,
+        method: 'post',
+        data: {
+            testcaseIds: caseIds,
+            projectId: projectId,
+            flag: flag,
+            envId: envId
+        }
+    };
+    return Base(config);
+}
