@@ -51,3 +51,10 @@ export interface Response {
     comparator: string,
     expectedValue: string
 }
+
+export interface InterfaceInfo {
+    interfaceName: string,
+    interfaceAddress: string,
+    interfaceMethod: string,
+    description?: string
+}

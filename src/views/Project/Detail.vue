@@ -46,6 +46,7 @@
             </span>
                     <a-button slot="footer" class="addCaseBtn" @click="handleAddCase(interInfoOne.id)">添加</a-button>
                 </a-table>
+                <a-button class="addCaseBtn" slot="footer" @click="visibleAddInterface=!visibleAddInterface">新增接口</a-button>
             </a-table>
         </a-tab-pane>
         <a-button slot="tabBarExtraContent" @click=" visible = !visible">
@@ -70,12 +71,49 @@
                 </a-form-model-item>
             </a-form-model>
         </a-modal>
+        <a-modal v-model="visibleAddInterface" title="添加接口" on-ok="handleOk">
+            <template slot="footer">
+                <a-button key="submit" type="primary" :loading="loading" @click="handleAddInterface">
+                    提交
+                </a-button>
+                <a-button key="back" @click="visibleAddInterface=false">
+                    取消
+                </a-button>
+            </template>
+            <a-form-model class="form" :rules="interfaceRoleRules" :model="interfaceForm" ref="ruleForm">
+                <a-form-model-item prop="moduleName" label="接口名称："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
+                    <a-input v-model="interfaceForm.interfaceName" placeholder="输入..."></a-input>
+                </a-form-model-item>
+                <a-form-model-item prop="moduleName" label="地址："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
+                    <a-input v-model="interfaceForm.interfaceAddress" placeholder="输入如/aa/bb"></a-input>
+                </a-form-model-item>
+                <a-form-model-item prop="moduleName" label="请求类型："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
+                    <a-select v-model="interfaceForm.interfaceMethod" defaultValue="GET">
+                        <a-select-option value="GET">
+                            GET
+                        </a-select-option>
+                        <a-select-option value="POST">
+                            POST
+                        </a-select-option>
+                        <a-select-option value="DELETE">
+                            DELETE
+                        </a-select-option>
+                        <a-select-option value="PUT">
+                            PUT
+                        </a-select-option>
+                    </a-select>
+                </a-form-model-item>
+                <a-form-model-item prop="description" label="备注：" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
+                    <a-textarea v-model="interfaceForm.description" placeholder="输入..."></a-textarea>
+                </a-form-model-item>
+            </a-form-model>
+        </a-modal>
     </div>
 </template>
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { getModuleList, getInterfaceList, addModule } from '@/services/project/index';
-    import {deleteTestcase, runtestcase} from '@/services/testcase/index'
+    import {deleteTestcase, runtestcase, addInterfaceInfo} from '@/services/testcase/index'
 
     interface Mod{
         id: number;
@@ -105,10 +143,18 @@
         private interInfo: Inter[] = [];
         private activeKey: number = 0;
         private visible: boolean = false;
+        private visibleAddInterface: boolean = false;
         private loading: boolean = false;
         private flag: boolean = false;
+
         private moduleForm: any={
             moduleName: "",
+            description: ""
+        };
+        private interfaceForm: any={
+            interfaceName: "",
+            interfaceAddress: "",
+            interfaceMethod: "",
             description: ""
         };
         private roleRules:any = {
@@ -120,6 +166,22 @@
                 }
             ],
         };
+        private interfaceRoleRules:any = {
+            interfaceName: [
+                {
+                    required: true,
+                    message: "请输入接口名称",
+                    trigger: "blur"
+                }
+            ],
+            interfaceAddress: [
+                {
+                    required: true,
+                    message: "请输入接口地址",
+                    trigger: "blur"
+                }
+            ]
+        }
         private columns = [
             {title: '接口名称', dataIndex: 'name', key: 'name'},
             {title: '地址', dataIndex: 'url', key: 'url'},
@@ -273,6 +335,19 @@
                 }
 
             );
+        }
+
+        private handleAddInterface(): void{
+            addInterfaceInfo(this.interfaceForm,Number(this.$route.params.id),this.moduleId).then(
+                (result: any) => {
+                    if (result.errcode==="0"){
+                        this.$message.success("新增成功，即将跳转到编辑页面");
+                    }
+                },
+                (err: any) => {
+                    this.$message.error(err.msg);
+                }
+            )
         }
 
     }

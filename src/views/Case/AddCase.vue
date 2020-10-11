@@ -249,7 +249,7 @@
 <!--                    </a-popconfirm>-->
                     <a-icon type="plus" @click="handleAddResponse(index,record.key)"/>
                 </template>
-                        <a-icon type="plus" slot="footer" v-if="testcaseForm.responses.length<=0" @click="handleAddResponse(0)"/>
+                        <a-icon type="plus" slot="footer" v-if="testcaseForm.responses.length<=0" @click="handleAddResponse(0,-1)"/>
                     </a-table>
                 </div>
             </a-collapse-panel>
@@ -591,9 +591,14 @@
                 expected: '',
             };
             var that=this;
-            this.testcaseForm.responses.forEach(function (value: any) {
-                that.addNewData(that.testcaseForm.responses,value,key,index);
-            })
+            if(key==-1){
+                that.testcaseForm.responses.splice(index+1,0,newData);
+            }else {
+                this.testcaseForm.responses.forEach(function (value: any) {
+                    that.addNewData(that.testcaseForm.responses,value,key,index);
+                })
+            }
+
             // var that=this;
             // this.testcaseForm.responses.forEach(function (value: any) {
             //     if(value.key==key){

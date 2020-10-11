@@ -1,7 +1,7 @@
 import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import Base from '@/services/base';
 import { PROJECTSERVER } from '@/config/host';
-import { Testcase } from './interfaces';
+import { Testcase,InterfaceInfo } from './interfaces';
 
 
 export function addTestcase( id: number,testcase: Testcase ): AxiosPromise {
@@ -60,4 +60,23 @@ export function runtestcase(caseIds: number[],projectId: number,envId: number,fl
         }
     };
     return Base(config);
+}
+
+
+export function addInterfaceInfo(info: InterfaceInfo, projectId: number, moduleId: number) {
+    const config: AxiosRequestConfig = {
+        url: `${PROJECTSERVER}/addInterface`,
+        method: 'post',
+        data: {
+            interfaceName: info.interfaceName,
+            interfaceAddress: info.interfaceAddress,
+            interfaceMethod: info.interfaceMethod,
+            description: info.description,
+            projectId: projectId,
+            moduleId: moduleId
+        }
+
+    };
+    return Base(config);
+
 }
