@@ -63,7 +63,7 @@ export function runtestcase(caseIds: number[],projectId: number,envId: number,fl
 }
 
 
-export function addInterfaceInfo(info: InterfaceInfo, projectId: number, moduleId: number) {
+export function addInterfaceInfo(info: InterfaceInfo, projectId: number, moduleId: number,envId: number) {
     const config: AxiosRequestConfig = {
         url: `${PROJECTSERVER}/addInterface`,
         method: 'post',
@@ -73,7 +73,8 @@ export function addInterfaceInfo(info: InterfaceInfo, projectId: number, moduleI
             interfaceMethod: info.interfaceMethod,
             description: info.description,
             projectId: projectId,
-            moduleId: moduleId
+            moduleId: moduleId,
+            envId: envId
         }
 
     };

@@ -183,7 +183,7 @@
                     </h3>
                     <a-table bordered :data-source="testcaseForm.responses" :columns="responseColumns" :pagination="false">
                         <template
-                                v-for="col in ['name', 'type', 'comparator', 'expected']"
+                                v-for="col in ['name', 'type', 'comparator', 'expectedValue']"
                                 :slot="col"
                                 slot-scope="text, record, index"
 
@@ -235,7 +235,7 @@
                                             v-model="record.name" v-if="col == 'name'"
                                     />
                                     <a-input
-                                            v-model="record.expected" v-else
+                                            v-model="record.expectedValue" v-else
                                     />
                                 </a-form-model-item>
 
@@ -459,9 +459,9 @@
                 scopedSlots: { customRender: 'comparator' },
             },
             {
-                title: 'expected',
-                dataIndex: 'expected',
-                scopedSlots: { customRender: 'expected' },
+                title: 'expectedValue',
+                dataIndex: 'expectedValue',
+                scopedSlots: { customRender: 'expectedValue' },
             },
             {
                 title: 'operation',
@@ -591,7 +591,7 @@
                 name: '',
                 type: '',
                 comparator: '',
-                expected: '',
+                expectedValue: '',
             };
             var that=this;
 
@@ -612,7 +612,7 @@
                 name: '',
                 type: '',
                 comparator: '',
-                expected: '',
+                expectedValue: '',
             };
             if(value.key==key){
                 previousValue.splice(index+1,0,newData);
@@ -633,7 +633,7 @@
             this.testcaseForm.responses.forEach(function (value) {
                 that.deleteResponse(that.testcaseForm.responses,value,index,key)
             })
-            this.testcaseForm.responses.splice(index,1);
+            // this.testcaseForm.responses.splice(index,1);
         }
 
         private deleteResponse(previousValue: any, value: any, index: number, key: number): void{
@@ -706,13 +706,12 @@
             var i=0;
             addKeyValue.forEach(function (value:any){
                 value.key=(new Date()).valueOf()+i;
-                console.log(value.key,8888);
                 if((value.type=="Array" || value.type=="Object") && !value.hasOwnProperty("children")){
                     const newData=[{
                         name: '',
                         type: '',
                         comparator: '',
-                        expected: ''
+                        expectedValue: ''
                     }];
                     value.children = newData;
                 }
@@ -811,7 +810,7 @@
                 name: '',
                 type: '',
                 comparator: '',
-                expected: '',
+                expectedValue: '',
             }];
             var that=this;
             value.forEach(function (value: any) {

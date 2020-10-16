@@ -47,21 +47,29 @@
         };
 
         private submit(): void{
-            addProject(this.projectForm).then(
-            (result: any) => {
-                if (result.errcode === "0") {
-                    this.$message.success("提交成功");
-                    this.$router.push({path:'/index'});
+            const ref: any = this.$refs.ruleForm;
+            ref.validate((valid: boolean) => {
+                if (valid){
+                    addProject(this.projectForm).then(
+                        (result: any) => {
+                            if (result.errcode === "0") {
+                                this.$message.success("提交成功");
+                                this.$router.push({path:'/index'});
+                            }
+                        },
+                        (err: any) => {
+                            if (err.errcode === "PRO002") {
+                                this.$message;
+                                return;
+                            }
+                            this.$message.error(err.errmsg);
+                        }
+                    );
+                }else {
+                    return false;
                 }
-            },
-            (err: any) => {
-                if (err.errcode === "PRO002") {
-                    this.$message;
-                    return;
-                }
-                this.$message.error(err.errmsg);
-            }
-            );
+            })
+
         }
 
         private handleReset(): void{

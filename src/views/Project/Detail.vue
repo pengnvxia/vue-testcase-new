@@ -55,14 +55,14 @@
     </a-tabs>
         <a-modal v-model="visible" title="添加模块" on-ok="handleOk">
             <template slot="footer">
-                <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
+                <a-button key="submit" type="primary" :loading="loading" @click="handleAddModule">
                     提交
                 </a-button>
                 <a-button key="back" @click="handleCancel">
                     取消
                 </a-button>
             </template>
-            <a-form-model class="form" :rules="roleRules" :model="moduleForm" ref="ruleForm">
+            <a-form-model class="form" :rules="roleRules" :model="moduleForm" ref="moduleRuleForm">
                 <a-form-model-item prop="moduleName" label="模块名称："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
                     <a-input v-model="moduleForm.moduleName" placeholder="输入..."></a-input>
                 </a-form-model-item>
@@ -80,14 +80,14 @@
                     取消
                 </a-button>
             </template>
-            <a-form-model class="form" :rules="interfaceRoleRules" :model="interfaceForm" ref="ruleForm">
-                <a-form-model-item prop="moduleName" label="接口名称："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
+            <a-form-model class="form" :rules="interfaceRoleRules" :model="interfaceForm" ref="interfaceRuleForm">
+                <a-form-model-item prop="interfaceName" label="接口名称："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
                     <a-input v-model="interfaceForm.interfaceName" placeholder="输入..."></a-input>
                 </a-form-model-item>
-                <a-form-model-item prop="moduleName" label="地址："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
+                <a-form-model-item prop="interfaceAddress" label="地址："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
                     <a-input v-model="interfaceForm.interfaceAddress" placeholder="输入如/aa/bb"></a-input>
                 </a-form-model-item>
-                <a-form-model-item prop="moduleName" label="请求类型："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
+                <a-form-model-item prop="interfaceMethod" label="请求类型："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
                     <a-select v-model="interfaceForm.interfaceMethod" defaultValue="GET">
                         <a-select-option value="GET">
                             GET
@@ -157,7 +157,7 @@
             interfaceMethod: "",
             description: ""
         };
-        private roleRules:any = {
+        private roleRules: any = {
             moduleName: [
                 {
                     required: true,
@@ -244,25 +244,33 @@
 
         }
 
-        private handleOk(): void{
-            this.loading = true;
-            addModule(Number(this.proEnv),this.repositoryId,this.moduleForm.moduleName,this.moduleForm.description).then(
-                (result: any) => {
-                    if (result.errcode === "0"){
-                        this.$message.success("添加成功");
-                        this.loading = false;
-                        this.visible = false;
-                        this.moduleList();
-                    }
-                },
-                (err: any) => {
-                    if (err.errcode === "MO002") {
-                        this.$message;
-                        return;
-                    }
-                    this.$message.error(err.errmsg);
+        private handleAddModule(): void{
+            const ref: any = this.$refs.moduleRuleForm;
+            ref.validate((valid: boolean) => {
+                if(valid) {
+                    this.loading = true;
+                    addModule(Number(this.proEnv),this.repositoryId,this.moduleForm.moduleName,this.moduleForm.description).then(
+                        (result: any) => {
+                            if (result.errcode === "0"){
+                                this.$message.success("添加成功");
+                                this.loading = false;
+                                this.visible = false;
+                                this.moduleList();
+                            }
+                        },
+                        (err: any) => {
+                            if (err.errcode === "MO002") {
+                                this.$message;
+                                return;
+                            }
+                            this.$message.error(err.errmsg);
+                        }
+                    );
+                }else {
+                    return false;
                 }
-            );
+            })
+
         }
 
         private handleCancel(): void{
@@ -305,6 +313,8 @@
                     )
                 },
                 onCancel(){
+                    that.flag=false;
+                    console.log(that.flag,1111);
                     runtestcase(caseIds,Number(that.$route.params.id),Number(that.proEnv),that.flag).then(
 
                         (result: any) => {
@@ -338,16 +348,24 @@
         }
 
         private handleAddInterface(): void{
-            addInterfaceInfo(this.interfaceForm,Number(this.$route.params.id),this.moduleId).then(
-                (result: any) => {
-                    if (result.errcode==="0"){
-                        this.$message.success("新增成功，即将跳转到编辑页面");
-                    }
-                },
-                (err: any) => {
-                    this.$message.error(err.msg);
+            const ref: any = this.$refs.interfaceRuleForm;
+            ref.validate((valid: boolean) => {
+                if (valid) {
+                    addInterfaceInfo(this.interfaceForm,Number(this.$route.params.id),this.moduleId,this.proEnv).then(
+                        (result: any) => {
+                            if (result.errcode==="0"){
+                                this.$message.success("新增成功，即将跳转到编辑页面");
+                            }
+                        },
+                        (err: any) => {
+                            this.$message;
+                        }
+                    )
+                } else {
+                    return false;
                 }
-            )
+            })
+
         }
 
     }

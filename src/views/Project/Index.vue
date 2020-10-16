@@ -57,6 +57,7 @@
             );
         }
         private projectListThree(): void {
+            this.projectDataThree = [];
             if(this.projectData.length > 0){
                 for( var i = 0 ; i<(this.projectData.length / 3 >> 0) + 1; i ++){
                     if( 3 * ( i + 1 )<this.projectData.length ){
@@ -90,7 +91,7 @@
         }
 
         private handleDel(id:number,name:string): void{
-            var that: any=this;
+            let that: any=this;
             this.$confirm({
                 title: `确定要删除${name}项目吗？`,
                 content: '删除后将无法恢复!',
@@ -100,6 +101,7 @@
                             if (result.errcode === "0") {
                                 that.$message.success("删除成功!");
                                 //缺少重新加载语句
+                                that.projectList();
                             }
                         },
                         (err: any) => {

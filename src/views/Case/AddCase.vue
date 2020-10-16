@@ -183,7 +183,7 @@
          </h3>
                     <a-table bordered :data-source="testcaseForm.responses" :columns="responseColumns" :pagination="false">
                 <template
-                        v-for="col in ['name', 'type', 'comparator', 'expected']"
+                        v-for="col in ['name', 'type', 'comparator', 'expectedValue']"
                         :slot="col"
                         slot-scope="text, record, index"
 
@@ -235,7 +235,7 @@
                                     v-model="record.name" v-if="col == 'name'"
                             />
                             <a-input
-                                    v-model="record.expected" v-else
+                                    v-model="record.expectedValue" v-else
                             />
                         </a-form-model-item>
 
@@ -326,7 +326,13 @@
             envId: 1,
             configIds: '1',
             requestBody: '',
-            variables: [],
+            variables: [{
+                key: (new Date()).valueOf(),
+                name: '',
+                type: '',
+                value: '',
+                database: '',
+            }],
             parameters: [],
             setuphooks: [],
             reqHeaders: [],
@@ -456,9 +462,9 @@
                 scopedSlots: { customRender: 'comparator' },
             },
             {
-                title: 'expected',
-                dataIndex: 'expected',
-                scopedSlots: { customRender: 'expected' },
+                title: 'expectedValue',
+                dataIndex: 'expectedValue',
+                scopedSlots: { customRender: 'expectedValue' },
             },
             {
                 title: 'operation',
@@ -522,7 +528,11 @@
                 value: '',
                 database: '',
             };
-            this.testcaseForm.variables.splice(index+1,0,newData);
+            console.log(this.testcaseForm.variables,1111111);
+            // this.testcaseForm.variables.splice(index+1,0,newData);
+            Vue.set(this.testcaseForm.variables, index, newData)
+            console.log(this.testcaseForm.variables,22222);
+
         }
 
         private handleDeleteVariables(index: number): void{
@@ -588,7 +598,7 @@
                 name: '',
                 type: '',
                 comparator: '',
-                expected: '',
+                expectedValue: '',
             };
             var that=this;
             if(key==-1){
@@ -623,7 +633,7 @@
                 name: '',
                 type: '',
                 comparator: '',
-                expected: '',
+                expectedValue: '',
             };
             if(value.key==key){
                 previousValue.splice(index+1,0,newData);
@@ -644,7 +654,7 @@
             this.testcaseForm.responses.forEach(function (value) {
                 that.deleteResponse(that.testcaseForm.responses,value,index,key)
             })
-            this.testcaseForm.responses.splice(index,1);
+            // this.testcaseForm.responses.splice(index,1);
         }
 
         private deleteResponse(previousValue: any, value: any, index: number, key: number): void{
@@ -692,7 +702,7 @@
                             name: '',
                             type: '',
                             comparator: '',
-                            expected: '',
+                            expectedValue: '',
                         }]
                     }
                 }
@@ -793,7 +803,7 @@
                 name: '',
                 type: '',
                 comparator: '',
-                expected: '',
+                expectedValue: '',
             }];
             var that=this;
             value.forEach(function (value: any) {
