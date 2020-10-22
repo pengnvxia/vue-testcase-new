@@ -177,7 +177,7 @@
                         </a-tab-pane>
                     </a-tabs>
                 </div>
-                <div>
+                <div class="response">
                     <h3 class="title">
              Response
          </h3>
@@ -188,7 +188,7 @@
                         slot-scope="text, record, index"
 
                 >
-                    <div :key="col">
+                    <div :key="col" class="responseForm">
                         <a-form-model-item v-if="col == 'comparator'">
                         <a-select style="width: 100px;" defaultValue="=" v-model="record.comparator">
                             <a-select-option value="=">
@@ -326,18 +326,13 @@
             envId: 1,
             configIds: '1',
             requestBody: '',
-            variables: [{
-                key: (new Date()).valueOf(),
-                name: '',
-                type: '',
-                value: '',
-                database: '',
-            }],
+            variables: [],
             parameters: [],
             setuphooks: [],
             reqHeaders: [],
             reqParams: [],
-            responses: [],
+            responses: []
+
         };
 
         private selectedItems: string[] = ['Apples'];
@@ -528,10 +523,8 @@
                 value: '',
                 database: '',
             };
-            console.log(this.testcaseForm.variables,1111111);
-            // this.testcaseForm.variables.splice(index+1,0,newData);
-            Vue.set(this.testcaseForm.variables, index, newData)
-            console.log(this.testcaseForm.variables,22222);
+            this.testcaseForm.variables.splice(index+1,0,newData);
+            // Vue.set(this.testcaseForm.variables, index, newData)
 
         }
 
@@ -600,7 +593,7 @@
                 comparator: '',
                 expectedValue: '',
             };
-            var that=this;
+            let that=this;
             if(key==-1){
                 that.testcaseForm.responses.splice(index+1,0,newData);
             }else {
@@ -681,7 +674,7 @@
             )
         }
 
-        private addKey(testcase: Testcase): Testcase {
+        private addKey(testcase: Testcase): void {
             if(testcase.reqHeaders.length>0){
                 for(var i=0;i<testcase.reqHeaders.length;i++){
                     testcase.reqHeaders[i].key=i;
@@ -694,27 +687,58 @@
 
             }
             if(testcase.responses.length>0){
-                for(var i=0;i<testcase.responses.length;i++){
-                    testcase.responses[i].key=i;
-                    if(testcase.responses[i].type=="Array" || testcase.responses[i].type=="Object"){
-                        testcase.responses[i].children=[{
-                            key: (new Date()).valueOf()+i,
-                            name: '',
-                            type: '',
-                            comparator: '',
-                            expectedValue: '',
-                        }]
-                    }
-                }
+                // for(var i=0;i<testcase.responses.length;i++){
+                //     testcase.responses[i].key=i;
+                //     if(testcase.responses[i].type=="Array" || testcase.responses[i].type=="Object"){
+                //         testcase.responses[i].children=[{
+                //             key: (new Date()).valueOf()+i,
+                //             name: '',
+                //             type: '',
+                //             comparator: '',
+                //             expectedValue: '',
+                //         }]
+                //     }
+                // }
+                this.resursionAddKey(testcase.responses);
+
 
             }
-            this.testcaseForm=testcase;
-            this.testcaseForm.variables=[];
-            this.testcaseForm.setuphooks=[];
-            this.testcaseForm.parameters=[];
-            return this.testcaseForm;
+            Object.assign(this.testcaseForm, testcase);
+            // this.testcaseForm=testcase;将testcase对象的引用给了testcaseForm，不正确
+            // this.testcaseForm.responses=testcase.responses;
 
+            // this.testcaseForm.variables=[];
+            // this.testcaseForm.setuphooks=[];
+            // this.testcaseForm.parameters=[];
+            // return this.testcaseForm;
         }
+
+        private resursionAddKey(addKeyValue:any): void{
+            let that=this;
+            addKeyValue.forEach(function (value:any){
+                value.key=(new Date()).valueOf()+Math.floor(Math.random() * 100000);
+                if((value.type=="Array" || value.type=="Object") && !value.hasOwnProperty("children")){
+                    const newData=[{
+                        name: '',
+                        type: '',
+                        comparator: '',
+                        expectedValue: ''
+                    }];
+                    //新修改
+                    // value.children = newData;
+                    Vue.set(value,'children',[{
+                        name: '',
+                        type: '',
+                        comparator: '',
+                        expectedValue: ''
+                    }]);
+                }
+                if(value.hasOwnProperty("children")){
+                    that.resursionAddKey(value.children);
+                }
+            });
+        }
+
 
         private submit(): void {
 
@@ -778,7 +802,6 @@
                     delete value.key;
                     if (value.hasOwnProperty("children")) {
                         that.deleteKey(value.children);
-                        console.log(value.children,101010);
                         if(value.children==false){
                             delete value.children;
                         }
@@ -793,7 +816,7 @@
         }
 
         private handleType(index:number, type: string, key: number): void{
-            var that=this;
+            let that=this;
             this.addType(that.testcaseForm.responses,type,key);
         }
 
@@ -809,7 +832,7 @@
             value.forEach(function (value: any) {
                 if(value.key == key){
                     if(type=="Array" || type=="Object"){
-                        value.children= newData;
+                        Vue.set(value,'children',newData);
                     }
                 }else if (value.hasOwnProperty("children")) {
                     that.addType(value.children,type,key);
@@ -854,6 +877,11 @@
     }
     .btn .cancelBtn{
         margin-left: 200px;
+    }
+
+    .responseForm{
+        display: inline-block;
+        width: 80%;
     }
 
 </style>

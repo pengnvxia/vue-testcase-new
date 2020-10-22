@@ -188,7 +188,7 @@
                                 slot-scope="text, record, index"
 
                         >
-                            <div :key="col">
+                            <div :key="col" class="responseForm">
                                 <a-form-model-item v-if="col == 'comparator'">
                                     <a-select style="width: 100px;" defaultValue="=" v-model="record.comparator">
                                         <a-select-option value="=">
@@ -660,7 +660,7 @@
             )
         }
 
-        private addKey(testcase: Testcase): Testcase {
+        private addKey(testcase: Testcase): void {
             if(testcase.hasOwnProperty("reqHeaders") && testcase.reqHeaders.length>0){
                 for(var i=0;i<testcase.reqHeaders.length;i++){
                     testcase.reqHeaders[i].key=i;
@@ -695,17 +695,13 @@
                     testcase.setuphooks[i].key=i;
                 }
             }
-            this.testcaseForm=testcase;
-            console.log(this.testcaseForm);
-            return this.testcaseForm;
-
+            Object.assign(this.testcaseForm, testcase);
         }
 
         private resursionAddKey(addKeyValue:any): void{
-            var that=this;
-            var i=0;
+            let that=this;
             addKeyValue.forEach(function (value:any){
-                value.key=(new Date()).valueOf()+i;
+                value.key=(new Date()).valueOf()+Math.floor(Math.random() * 100000);
                 if((value.type=="Array" || value.type=="Object") && !value.hasOwnProperty("children")){
                     const newData=[{
                         name: '',
@@ -713,12 +709,18 @@
                         comparator: '',
                         expectedValue: ''
                     }];
-                    value.children = newData;
+                    //新修改
+                    // value.children = newData;
+                    Vue.set(value,'children',[{
+                        name: '',
+                        type: '',
+                        comparator: '',
+                        expectedValue: ''
+                    }]);
                 }
                 if(value.hasOwnProperty("children")){
                     that.resursionAddKey(value.children);
                 }
-                i=i+1;
             });
         }
 
@@ -785,7 +787,6 @@
                     delete value.key;
                     if (value.hasOwnProperty("children")) {
                         that.deleteKey(value.children);
-                        console.log(value.children,101010);
                         if(value.children==false){
                             delete value.children;
                         }
@@ -800,7 +801,7 @@
         }
 
         private handleType(index:number, type: string, key: number): void{
-            var that=this;
+            let that=this;
             this.addType(that.testcaseForm.responses,type,key);
         }
 
@@ -816,7 +817,7 @@
             value.forEach(function (value: any) {
                 if(value.key == key){
                     if(type=="Array" || type=="Object"){
-                        value.children= newData;
+                        Vue.set(value,'children',newData);
                     }
                 }else if (value.hasOwnProperty("children")) {
                     that.addType(value.children,type,key);
@@ -862,5 +863,8 @@
     .btn .cancelBtn{
         margin-left: 200px;
     }
-
+    .responseForm{
+        display: inline-block;
+        width: 80%;
+    }
 </style>
