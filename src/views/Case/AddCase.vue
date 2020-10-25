@@ -8,23 +8,33 @@
             </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-            <a-form-model-item prop="projectName" label="环境：" :label-col="{ span: 2 }" :wrapper-col="{ span:10 }">
-                <a-select v-model="testcaseForm.envId">
-                    <a-select-option :value="1">
-                        测试
-                    </a-select-option>
-                    <a-select-option :value="2">
-                        生产
-                    </a-select-option>
-                </a-select>
-            </a-form-model-item>
+                    <a-form-model-item label="路径：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }">
+                        <a-input placeholder="如 xx/xx" v-model="testcaseForm.path"></a-input>
+                    </a-form-model-item>
                 </a-col>
             </a-row>
-            <a-form-model-item label="配置项：" :label-col="{ span: 2 }" :wrapper-col="{ span: 5 }">
-                <a-select mode="multiple" placeholder="Inserted are removed" :value="selectedItems" @change="handleChange">
-                    <a-select-option v-for="item in notSelectedItems" :key="item" :value="item">{{ item }}</a-select-option>
-                </a-select>
-            </a-form-model-item>
+            <a-row>
+                <a-col :span="12">
+                    <a-form-model-item label="配置项：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
+                        <a-select mode="multiple" placeholder="请选择配置项" v-model="selectedItemsList"  @change="handleChange">
+                            <a-select-option v-for="item in notSelectedItems" :key="item.id" :value="item.configName">{{ item.configName }}</a-select-option>
+                        </a-select>
+                    </a-form-model-item>
+                </a-col>
+                <a-col :span="12">
+                    <a-form-model-item prop="projectName" label="环境：" :label-col="{ span: 2 }" :wrapper-col="{ span:10 }">
+                        <a-select v-model="testcaseForm.envId">
+                            <a-select-option :value="1">
+                                测试
+                            </a-select-option>
+                            <a-select-option :value="2">
+                                生产
+                            </a-select-option>
+                        </a-select>
+                    </a-form-model-item>
+                </a-col>
+            </a-row>
+
         </div>
         <a-collapse expandIconPosition="right" defaultActiveKey="request&response">
             <a-collapse-panel  key="variables" header="Variables">
@@ -264,11 +274,14 @@
 <script lang="ts">
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { addTestcase,interfaceInfo } from '@/services/testcase/index';
+    import { searchConfig } from '@/services/testcaseConfig/index';
+
 
     interface Testcase {
         testcaseName: string,
+        path: string,
         envId: number,
-        configIds: string,
+        configIds: number[],
         requestBody: string,
         variables: any[],
         parameters: any[],
@@ -323,8 +336,9 @@
     export default class AddCase extends Vue {
         private testcaseForm: Testcase={
             testcaseName: '',
+            path: '',
             envId: 1,
-            configIds: '1',
+            configIds: [],
             requestBody: '',
             variables: [],
             parameters: [],
@@ -335,9 +349,13 @@
 
         };
 
-        private selectedItems: string[] = ['Apples'];
-        private options = ['Apples', 'Nails', 'Bananas', 'Helicopters', 'aca', 'bbc'];
-        private notSelectedItems: string[] = [];
+        // private selectedItems: string[] = ['Apples'];
+        private selectedItemsList: string[]=[];
+        private selectedItems: any[] = [];
+        // private options = ['Apples', 'Nails', 'Bananas', 'Helicopters', 'aca', 'bbc'];
+        private options: any[]=[];
+        // private notSelectedItems: string[] = [];
+        private notSelectedItems: any[] = [];
         private variablesColumns= [
             {
                 title: 'name',
@@ -502,17 +520,32 @@
         }
 
         private mounted():void {
-            this.filteredOptions();
+            this.getOptions();
             this.getInterfaceInfo();
+            this.filteredOptions();
+        }
+
+        private getOptions(){
+            searchConfig('',Number(this.$route.params.projectId),'',this.testcaseForm.envId).then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.options=result.retval;
+                    }
+                },
+                (err: any) => {
+                    this.$message;
+                }
+            )
         }
 
         @Watch("selectedItems")
-        private  filteredOptions(): string[]{
-            return this.notSelectedItems = this.options.filter(o => !this.selectedItems.includes(o));
+        private  filteredOptions(): void{
+            this.notSelectedItems = this.options.filter(o => !this.selectedItems.includes(o));
 
         }
-        private handleChange(selectedItems: string[]): void{
-            this.selectedItems = selectedItems;
+        private handleChange(): void{
+
+            this.selectedItems = this.options.filter(o => this.selectedItemsList.includes(o.configName));
         }
 
         private handleAddVariables(index: number): void{
@@ -704,6 +737,12 @@
 
             }
             Object.assign(this.testcaseForm, testcase);
+            this.selectedItems=this.options.filter(o => this.testcaseForm.configIds.includes(o.id));
+            if(this.selectedItems.length>0){
+                for(let i=0;i<this.selectedItems.length;i++){
+                    this.selectedItemsList.push(this.selectedItems[i].configName);
+                }
+            }
             // this.testcaseForm=testcase;将testcase对象的引用给了testcaseForm，不正确
             // this.testcaseForm.responses=testcase.responses;
 

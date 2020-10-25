@@ -1,5 +1,6 @@
 export interface Testcase {
     testcaseName: string,
+    path: string,
     envId: number,
     configIds?: string,
     requestBody?: string,

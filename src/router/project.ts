@@ -29,7 +29,8 @@ const project: RouteConfig[] = [{
             component: ()=> import('@/views/Project/Edit.vue')
         },
         {
-            path: 'addcase/:id',
+            // path: 'addcase/:id',
+            path: 'addcase/:projectId/:envId/:id',
             meta: {title:'添加用例'},
             component: ()=> import('@/views/Case/AddCase.vue')
         },

@@ -146,7 +146,6 @@
         private visibleAddInterface: boolean = false;
         private loading: boolean = false;
         private flag: boolean = false;
-
         private moduleForm: any={
             moduleName: "",
             description: ""
@@ -279,9 +278,9 @@
 
         private handleAddCase(id:number): void{
             this.$router.push({
-                path:`/addcase/${id}`
+                path:`/addcase/${this.$route.params.id}/${this.proEnv}/${id}`
 
-
+                // path:`/addcase/${id}`
             });
         }
 
