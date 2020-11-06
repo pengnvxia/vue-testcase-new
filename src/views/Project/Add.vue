@@ -28,7 +28,7 @@
     import { addProject } from "@/services/project/index";
 
     @Component
-    export default class Project extends Vue {
+    export default class Add extends Vue {
         private projectForm: any={
             projectName: "",
             devAddress: "",

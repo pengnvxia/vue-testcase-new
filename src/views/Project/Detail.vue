@@ -26,9 +26,11 @@
                         :data-source="interInfoOne.testcaseInfos"
                         :pagination="false" rowKey="caseId"
                 >
-                    <template slot="caseUpdatedAt" slot-scope="caseUpdatedAt">
+                    <span slot="caseUpdatedAt" slot-scope="caseUpdatedAt">
                         {{ caseUpdatedAt | formatDate }}
-                    </template>
+                    </span>
+
+                    <a slot="caseName" slot-scope="text,record" @click="handleReport(record.caseId)">{{ text }}</a>
             <span slot="operation" slot-scope="testcaseInfoOne" class="table-operation">
                 <a @click="handleEditTestcase(testcaseInfoOne.caseId)">编辑</a>
                 <a @click="handleRunTestcase(testcaseInfoOne.caseId)">运行</a>
@@ -191,7 +193,7 @@
         // private data = [{key: 1,name: 'Screem',address: 'iOS',updator: 'Jack',updatedAt: '2014-12-24 23:12:00'}];
         //
         private innerColumns = [
-            {title: '用例名称', dataIndex: 'caseName', key: 'caseName'},
+            {title: '用例名称', dataIndex: 'caseName', key: 'caseName',scopedSlots:{customRender:'caseName'}},
             {title: '所属环境', dataIndex: 'caseEnvId', key: 'caseEnvId'},
             {title: '最后编辑人', dataIndex: 'caseUpdatedBy', key: 'caseUpdatedBy'},
             {title: '更新时间', dataIndex: 'caseUpdatedAt', key: 'caseUpdatedAt',scopedSlots:{customRender:'caseUpdatedAt'}},
@@ -284,9 +286,15 @@
             });
         }
 
+        private handleReport(id:number): void{
+            this.$router.push({
+                path:`/report/${id}`
+            })
+        }
+
         private handleEditTestcase(id: number): void{
             this.$router.push({
-                path:`/editcase/${id}`
+                path:`/editcase/${this.$route.params.id}/${this.proEnv}/${id}`
             })
         }
 
@@ -350,7 +358,7 @@
             const ref: any = this.$refs.interfaceRuleForm;
             ref.validate((valid: boolean) => {
                 if (valid) {
-                    addInterfaceInfo(this.interfaceForm,Number(this.$route.params.id),this.moduleId,this.proEnv).then(
+                    addInterfaceInfo(this.interfaceForm,Number(this.$route.params.id),this.moduleId,Number(this.proEnv)).then(
                         (result: any) => {
                             if (result.errcode==="0"){
                                 this.$message.success("新增成功，即将跳转到编辑页面");

@@ -1,5 +1,5 @@
 <template>
-    <a-form-model :model="testcaseForm" class="caseForm" :rules="ruleForm">
+    <a-form-model :model="testcaseForm" class="caseForm" :rules="ruleForm" ref="testcaseRuleForm">
         <div>
             <a-row>
                 <a-col :span="12">
@@ -8,7 +8,7 @@
             </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-model-item label="路径：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }">
+                    <a-form-model-item prop="path" label="路径：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }">
                         <a-input placeholder="如 xx/xx" v-model="testcaseForm.path"></a-input>
                     </a-form-model-item>
                 </a-col>
@@ -44,7 +44,7 @@
                         <a-form-model-item prop="inputText" v-if="col == 'name'">
                             <a-input v-model="record.name"/>
                         </a-form-model-item>
-                        <a-form-model-item v-else-if="col == 'value'">
+                        <a-form-model-item prop="inputText" v-else-if="col == 'value'">
                             <a-input v-model="record.value"/>
                         </a-form-model-item>
                         <a-form-model-item v-else-if="col == 'type'">
@@ -91,7 +91,6 @@
                         <a-icon type="plus" @click="handleAddParameters(index)"/>
                     </template>
                     <a-icon type="plus" slot="footer" v-if="testcaseForm.parameters.length<=0" @click="handleAddParameters(0)"/>
-
                 </a-table>
             </a-collapse-panel>
             <a-collapse-panel  key="setuphooks" header="Setuphooks">
@@ -191,7 +190,7 @@
                     <h3 class="title">
              Response
          </h3>
-                    <a-table bordered :data-source="testcaseForm.responses" :columns="responseColumns" :pagination="false">
+                    <a-table bordered :data-source="testcaseForm.responses" :columns="responseColumns" :pagination="false" :indentSize=20>
                 <template
                         v-for="col in ['name', 'type', 'comparator', 'expectedValue']"
                         :slot="col"
@@ -274,13 +273,14 @@
 <script lang="ts">
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { addTestcase,interfaceInfo } from '@/services/testcase/index';
-    import { searchConfig } from '@/services/testcaseConfig/index';
+    import { configList } from '@/services/testcaseConfig/index';
 
 
     interface Testcase {
         testcaseName: string,
         path: string,
         envId: number,
+        method: string,
         configIds: number[],
         requestBody: string,
         variables: any[],
@@ -291,53 +291,15 @@
         responses: any[]
     }
 
-    // interface Variable {
-    //     key: string,
-    //     name: string,
-    //     type: string,
-    //     value: string,
-    //     databaseId?: number
-    // }
-    //
-    // interface Parameter {
-    //     key: string,
-    //     keyName: string,
-    //     value: string
-    // }
-    //
-    // interface Setuphook {
-    //     key: string,
-    //     sql: string,
-    //     databaseId: number
-    // }
-    //
-    // interface ReqHeader {
-    //     key: string,
-    //     keyName: string,
-    //     value: string
-    //
-    // }
-    //
-    // interface ReqParam {
-    //     key: string,
-    //     keyName: string,
-    //     value: string
-    // }
-    //
-    // interface Response {
-    //     key:string,
-    //     name: string,
-    //     type: string,
-    //     comparator: string,
-    //     expectedValue: string
-    // }
+
     @Component({
     })
     export default class AddCase extends Vue {
         private testcaseForm: Testcase={
             testcaseName: '',
             path: '',
-            envId: 1,
+            envId: Number(this.$route.params.envId),
+            method: '',
             configIds: [],
             requestBody: '',
             variables: [],
@@ -390,7 +352,7 @@
                 title: 'name',
                 dataIndex: 'keyName',
                 width: '15%',
-                scopedSlots: {customRender: 'KeyName'},
+                scopedSlots: {customRender: 'name'},
             },
             {
                 title: 'value',
@@ -407,7 +369,7 @@
             {
                 title: 'sql',
                 dataIndex: 'sql',
-                width: '15%',
+                width: '50%',
                 scopedSlots: {customRender: 'sql'},
             },
             {
@@ -461,7 +423,7 @@
             {
                 title: 'name',
                 dataIndex: 'name',
-                width: '15%',
+                width: '50%',
                 scopedSlots: {customRender: 'name'},
             },
             {
@@ -485,55 +447,49 @@
                 scopedSlots: { customRender: 'operation' },
             },
         ]
-        private variablesDataSource=[
-            {
-                key: '0',
-                name: 'Edward King 0',
-                type: '32',
-                value: 'London, Park Lane no. 0',
-                database: 'paper'
-            },
-            {
-                key: '1',
-                name: 'Edward King 1',
-                type: '32',
-                value: 'London, Park Lane no. 1',
-                database: 'quiz'
-            },
-        ];
 
         private ruleForm:any ={
             testcaseName:[
                 {
                     required: true,
-                    message: "请输入项目名称",
+                    message: "请输入用例名称",
                     trigger: "blur"
                 }
             ],
-            // inputText:[
+            path: [{
+                required: true,
+                message: "请输入路径",
+                trigger: "blur"
+            }],
+            // inputText: [
             //     {
             //         required: true,
             //         message: "请输入",
             //         trigger: "blur"
             //     }
             // ]
+
         }
+        private inputRule: any = [{
+            required: true,
+            message: "请输入aaa",
+            trigger: "blur"
+        }]
 
         private mounted():void {
             this.getOptions();
-            this.getInterfaceInfo();
-            this.filteredOptions();
         }
 
         private getOptions(){
-            searchConfig('',Number(this.$route.params.projectId),'',this.testcaseForm.envId).then(
+            configList(Number(this.$route.params.projectId),this.testcaseForm.envId).then(
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.options=result.retval;
+                        this.getInterfaceInfo();
                     }
                 },
                 (err: any) => {
-                    this.$message;
+                    this.$message.error(err.message);
                 }
             )
         }
@@ -541,11 +497,16 @@
         @Watch("selectedItems")
         private  filteredOptions(): void{
             this.notSelectedItems = this.options.filter(o => !this.selectedItems.includes(o));
-
         }
         private handleChange(): void{
-
             this.selectedItems = this.options.filter(o => this.selectedItemsList.includes(o.configName));
+            this.testcaseForm.configIds=[];
+            if(this.selectedItems.length>0){
+                for(let i=0;i<this.selectedItems.length;i++){
+                    this.testcaseForm.configIds.push(this.selectedItems[i].id);
+                }
+
+            }
         }
 
         private handleAddVariables(index: number): void{
@@ -619,7 +580,6 @@
         }
         private handleAddResponse(index: number,key:number): void {
             const newData = {
-                // key: String(this.testcaseForm.responses.length),
                 key: (new Date()).valueOf(),
                 name: '',
                 type: '',
@@ -654,7 +614,6 @@
 
         private addNewData(previousValue:any,value:any,key:number,index:number): any{
             const newData = {
-                // key: String(this.testcaseForm.responses.length),
                 key: (new Date()).valueOf(),
                 name: '',
                 type: '',
@@ -699,27 +658,28 @@
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.addKey(result.retval);
+                        this.filteredOptions();
                     }
                 },
                 (err: any) => {
-                    this.$message;
+                    this.$message.error(err.message);
                 }
             )
         }
 
         private addKey(testcase: Testcase): void {
-            if(testcase.reqHeaders.length>0){
+            if(testcase.reqHeaders.length>0 && testcase.reqHeaders.length>0){
                 for(var i=0;i<testcase.reqHeaders.length;i++){
                     testcase.reqHeaders[i].key=i;
                 }
             }
-            if(testcase.reqParams.length>0){
+            if(testcase.reqParams.length>0 && testcase.reqParams.length>0){
                 for(var i=0;i<testcase.reqParams.length;i++){
                     testcase.reqParams[i].key=i;
                 }
 
             }
-            if(testcase.responses.length>0){
+            if(testcase.responses.length>0 && testcase.responses.length>0){
                 // for(var i=0;i<testcase.responses.length;i++){
                 //     testcase.responses[i].key=i;
                 //     if(testcase.responses[i].type=="Array" || testcase.responses[i].type=="Object"){
@@ -780,19 +740,25 @@
 
 
         private submit(): void {
-
-            this.processTestcaseForm(this.testcaseForm);
-            addTestcase(Number(this.$route.params.id),this.testcaseForm).then(
-                (result: any) => {
-                    if (result.errcode === "0") {
-                        this.$message.success("提交成功");
-                        this.$router.go(-1);
-                    }
-                },
-                (err: any) => {
-                    this.$message;
+            const ref: any = this.$refs.testcaseRuleForm;
+            ref.validate((valid: boolean) => {
+                if (valid) {
+                    this.processTestcaseForm(this.testcaseForm);
+                    addTestcase(Number(this.$route.params.id), this.testcaseForm).then(
+                        (result: any) => {
+                            if (result.errcode === "0") {
+                                this.$message.success("提交成功");
+                                this.$router.go(-1);
+                            }
+                        },
+                        (err: any) => {
+                            this.$message;
+                        }
+                    );
+                } else {
+                    return false;
                 }
-            );
+            })
         }
 
         private processTestcaseForm(testcase: Testcase): Testcase{
@@ -872,6 +838,10 @@
                 if(value.key == key){
                     if(type=="Array" || type=="Object"){
                         Vue.set(value,'children',newData);
+                    }else {
+                        if(value.hasOwnProperty("children")){
+                            Vue.delete(value,'children');
+                        }
                     }
                 }else if (value.hasOwnProperty("children")) {
                     that.addType(value.children,type,key);
@@ -901,6 +871,7 @@
         margin-bottom: 0;
         margin: -5px 0;
     }
+
     .caseForm .ant-form-item-control{
         line-height: 32px;
     }

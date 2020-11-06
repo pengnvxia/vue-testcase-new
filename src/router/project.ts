@@ -10,34 +10,45 @@ const project: RouteConfig[] = [{
         {
             path: 'index',
             name: 'project',
-            meta:{title:'项目'},
+            meta:{title:'项目',isShow: true},
             component: ()=> import('@/views/Project/Index.vue'),
         },
         {
             path: 'add',
-            meta:{title:'新增项目'},
+            name: 'add',
+            meta:{title:'新增项目',isShow: false},
             component: ()=> import('@/views/Project/Add.vue')
         },
         {
             path: 'detail/:id',
-            meta:{title:'项目详情'},
+            name: 'detail',
+            meta:{title:'项目详情',isShow: false},
             component: ()=> import('@/views/Project/Detail.vue')
         },
         {
             path: 'edit/:id',
-            meta:{title:'编辑项目'},
+            name: 'edit',
+            meta:{title:'编辑项目',isShow: false},
             component: ()=> import('@/views/Project/Edit.vue')
         },
         {
             // path: 'addcase/:id',
             path: 'addcase/:projectId/:envId/:id',
-            meta: {title:'添加用例'},
+            name: 'addcase',
+            meta: {title:'添加用例',isShow: false},
             component: ()=> import('@/views/Case/AddCase.vue')
         },
         {
-            path: 'editcase/:id',
-            meta: {title:'编辑用例'},
+            // path: 'editcase/:id',
+            path: 'editcase/:projectId/:envId/:id',
+            meta: {title:'编辑用例',isShow: false},
             component: ()=> import('@/views/Case/EditCase.vue')
+        },
+        {
+            path: 'report/:id',
+            name: 'report',
+            meta:{title:'报告',isShow: false},
+            component: ()=> import('@/views/Report/Index.vue'),
         }
 
         // {

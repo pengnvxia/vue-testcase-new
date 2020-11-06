@@ -64,7 +64,7 @@
                         // }else{
                         //     newMenuData.push(...this.getMenuData(itemChildren.children))
                         // }
-                        if(itemChildren.name){
+                        if(itemChildren.meta.isShow){
                             const newItem = {...itemChildren};
                             delete newItem.children;
                             if(itemChildren.children){

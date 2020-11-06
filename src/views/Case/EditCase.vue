@@ -1,5 +1,5 @@
 <template>
-    <a-form-model :model="testcaseForm" class="caseForm" :rules="ruleForm">
+    <a-form-model :model="testcaseForm" class="caseForm" :rules="ruleForm"  ref="testcaseRuleForm">
         <div>
             <a-row>
                 <a-col :span="12">
@@ -8,7 +8,7 @@
                     </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-model-item label="路径：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }">
+                    <a-form-model-item prop="path" label="路径：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }">
                         <a-input placeholder="如 xx/xx" v-model="testcaseForm.path"></a-input>
                     </a-form-model-item>
                 </a-col>
@@ -274,7 +274,7 @@
 <script lang="ts">
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { editTestcase,testcaseInfo } from '@/services/testcase/index';
-    import { searchConfig } from '@/services/testcaseConfig/index';
+    import { configList } from '@/services/testcaseConfig/index';
 
     interface Testcase {
         testcaseName: string,
@@ -291,53 +291,14 @@
         reqBody: {}
     }
 
-    // interface Variable {
-    //     key: string,
-    //     name: string,
-    //     type: string,
-    //     value: string,
-    //     databaseId?: number
-    // }
-    //
-    // interface Parameter {
-    //     key: string,
-    //     keyName: string,
-    //     value: string
-    // }
-    //
-    // interface Setuphook {
-    //     key: string,
-    //     sql: string,
-    //     databaseId: number
-    // }
-    //
-    // interface ReqHeader {
-    //     key: string,
-    //     keyName: string,
-    //     value: string
-    //
-    // }
-    //
-    // interface ReqParam {
-    //     key: string,
-    //     keyName: string,
-    //     value: string
-    // }
-    //
-    // interface Response {
-    //     key:string,
-    //     name: string,
-    //     type: string,
-    //     comparator: string,
-    //     expectedValue: string
-    // }
+
     @Component({
     })
     export default class AddCase extends Vue {
         private testcaseForm: Testcase={
             testcaseName: '',
             path: '',
-            envId: 1,
+            envId: Number(this.$route.params.envId),
             configIds: [],
             requestBody: '',
             variables: [],
@@ -389,7 +350,7 @@
         private parametersColumns= [
             {
                 title: 'name',
-                dataIndex: 'keyNname',
+                dataIndex: 'keyName',
                 width: '15%',
                 scopedSlots: {customRender: 'name'},
             },
@@ -408,7 +369,7 @@
             {
                 title: 'sql',
                 dataIndex: 'sql',
-                width: '15%',
+                width: '50%',
                 scopedSlots: {customRender: 'sql'},
             },
             {
@@ -462,7 +423,7 @@
             {
                 title: 'name',
                 dataIndex: 'name',
-                width: '15%',
+                width: '50%',
                 scopedSlots: {customRender: 'name'},
             },
             {
@@ -507,30 +468,28 @@
             testcaseName:[
                 {
                     required: true,
-                    message: "请输入项目名称",
+                    message: "请输入用例名称",
                     trigger: "blur"
                 }
             ],
-            // inputText:[
-            //     {
-            //         required: true,
-            //         message: "请输入",
-            //         trigger: "blur"
-            //     }
-            // ]
+            path: [{
+                required: true,
+                message: "请输入路径",
+                trigger: "blur"
+            }]
+
         }
 
         private mounted():void {
             this.getOptions();
-            this.getInterfaceInfo();
-            this.filteredOptions();
         }
 
         private getOptions(){
-            searchConfig('',Number(this.$route.params.projectId),'',this.testcaseForm.envId).then(
+            configList(Number(this.$route.params.projectId),this.testcaseForm.envId).then(
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.options=result.retval;
+                        this.getInterfaceInfo();
                     }
                 },
                 (err: any) => {
@@ -546,6 +505,13 @@
         }
         private handleChange(): void{
             this.selectedItems = this.options.filter(o => this.selectedItemsList.includes(o.configName));
+            this.testcaseForm.configIds=[];
+            if(this.selectedItems.length>0){
+                for(let i=0;i<this.selectedItems.length;i++){
+                    this.testcaseForm.configIds.push(this.selectedItems[i].id);
+                }
+
+            }
         }
 
         private handleAddVariables(index: number): void{
@@ -683,6 +649,7 @@
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.addKey(result.retval);
+                        this.filteredOptions();
                     }
                 },
                 (err: any) => {
@@ -763,19 +730,26 @@
         }
 
         private submit(): void {
-
-            this.processTestcaseForm(this.testcaseForm);
-            editTestcase(Number(this.$route.params.id),this.testcaseForm).then(
-                (result: any) => {
-                    if (result.errcode === "0") {
-                        this.$message.success("更新成功");
-                        this.$router.go(-1);
-                    }
-                },
-                (err: any) => {
-                    this.$message.error(err.errmsg);
+            const ref: any = this.$refs.testcaseRuleForm;
+            ref.validate((valid: boolean) => {
+                if (valid) {
+                    this.processTestcaseForm(this.testcaseForm);
+                    editTestcase(Number(this.$route.params.id), this.testcaseForm).then(
+                        (result: any) => {
+                            if (result.errcode === "0") {
+                                this.$message.success("更新成功");
+                                this.$router.go(-1);
+                            }
+                        },
+                        (err: any) => {
+                            this.$message.error(err.errmsg);
+                        }
+                    );
+                } else {
+                    return false;
                 }
-            );
+            });
+
         }
 
         private processTestcaseForm(testcase: Testcase): Testcase{
@@ -856,6 +830,8 @@
                 if(value.key == key){
                     if(type=="Array" || type=="Object"){
                         Vue.set(value,'children',newData);
+                    }else {
+                        Vue.delete(value,'children');
                     }
                 }else if (value.hasOwnProperty("children")) {
                     that.addType(value.children,type,key);
@@ -879,7 +855,7 @@
         padding-right: 5px;
     }
     .ant-table-tbody .ant-input {
-        border: none;
+        /*border: none;*/
     }
     .caseForm .ant-table-tbody .ant-form-item{
         margin-bottom: 0;

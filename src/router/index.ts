@@ -23,14 +23,17 @@ export const router: Router = new Router({
       path: '/',
       redirect: '/home',
       meta: {
-        title: '首页'
+        title: '首页',
+        isShow: false
       }
     },
     {
       path: '/home',
       name: 'home',
       meta: {
-        title: '首页'
+        title: '首页',
+        isShow: false
+
       },
       component: () => import(/* webpackChunkName: "notFound" */ '@/views/Home/Index.vue')
     },
@@ -38,7 +41,8 @@ export const router: Router = new Router({
       path: '/about',
       name: 'about',
       meta: {
-        title: '关于我们'
+        title: '关于我们',
+        isShow: false
       },
       component: () => import(/* webpackChunkName: "notFound" */ '@/views/About/Index.vue')
     },
@@ -46,7 +50,8 @@ export const router: Router = new Router({
       path: '*',
       name: 'error',
       meta: {
-        title:'错误'
+        title:'错误',
+        isShow: false
       },
       component: () => import(/* webpackChunkName: "notFound" */ '@/views/Error/Index.vue')
     }

@@ -8,6 +8,7 @@
             <a-layout>
                 <a-layout-header style="background: #fff; padding: 0" >
                     <a-icon class="trigger" :type="collapsed ? 'menu-unfold':'menu-fold'" @click="collapsed = !collapsed"></a-icon>
+                    <Breadcrumb></Breadcrumb>
                     <Header></Header>
                 </a-layout-header>
                 <a-layout-content style="margin: 0 16px">
@@ -26,11 +27,14 @@
     import Header from '@/components/Header/Header.vue';
     import Footer from '@/components/Footer/Footer.vue';
     import SiderMenu from '@/components/Menu/SiderMenu.vue';
+    import Breadcrumb from '@/components/Bread/Breadcrumb.vue';
+
     @Component({
         components: {
             Header,
             Footer,
-            SiderMenu
+            SiderMenu,
+            Breadcrumb
         }
     })
     export default class Layout extends Vue {

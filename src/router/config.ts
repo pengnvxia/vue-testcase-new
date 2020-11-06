@@ -10,9 +10,21 @@ const config: RouteConfig[] = [{
         {
             path: 'config',
             name: 'config',
-            meta:{title:'配置'},
+            meta:{title:'配置',isShow: true},
             component: ()=> import('@/views/Config/Index.vue'),
         },
+        {
+            path: 'config/add',
+            name: 'configAdd',
+            meta:{title:'添加配置',isShow: true},
+            component: ()=> import('@/views/Config/AddConfig.vue'),
+        },
+        {
+            path: 'config/edit/:id',
+            name: 'configEdit',
+            meta:{title:'添加配置',isShow: true},
+            component: ()=> import('@/views/Config/EditConfig.vue'),
+        }
         // {
         //     path: 'add',
         //     meta:{title:'新增项目'},
