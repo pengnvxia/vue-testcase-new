@@ -16,13 +16,13 @@ const config: RouteConfig[] = [{
         {
             path: 'config/add',
             name: 'configAdd',
-            meta:{title:'添加配置',isShow: true},
+            meta:{title:'添加配置',isShow: false},
             component: ()=> import('@/views/Config/AddConfig.vue'),
         },
         {
             path: 'config/edit/:id',
             name: 'configEdit',
-            meta:{title:'添加配置',isShow: true},
+            meta:{title:'添加配置',isShow: false},
             component: ()=> import('@/views/Config/EditConfig.vue'),
         }
         // {

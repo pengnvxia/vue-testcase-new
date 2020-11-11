@@ -41,10 +41,10 @@
                 <a-table bordered :data-source="testcaseForm.variables" :columns="variablesColumns" :pagination="false">
                     <template v-for="col in ['name', 'type', 'value', 'database']" :slot="col" slot-scope="text, record, index">
                     <div :key="col">
-                        <a-form-model-item prop="inputText" v-if="col == 'name'">
+                        <a-form-model-item prop="inputText" v-if="col == 'name'" :prop="'variables.'+index+'.name'" :rules="ruleForm.proName">
                             <a-input v-model="record.name"/>
                         </a-form-model-item>
-                        <a-form-model-item prop="inputText" v-else-if="col == 'value'">
+                        <a-form-model-item prop="inputText" v-else-if="col == 'value'" :prop="'variables.'+index+'.value'" :rules="ruleForm.proValue">
                             <a-input v-model="record.value"/>
                         </a-form-model-item>
                         <a-form-model-item v-else-if="col == 'type'">
@@ -78,9 +78,11 @@
                 <a-table bordered :data-source="testcaseForm.parameters" :columns="parametersColumns" :pagination="false">
                     <template v-for="col in ['name', 'value']" :slot="col" slot-scope="text, record, index">
                         <div :key="col">
-                            <a-form-model-item>
+                            <a-form-model-item v-if="col == 'name'" :prop="'parameters.'+index+'.name'" :rules="ruleForm.proName">
                                 <a-input v-model="record.keyName" v-if="col == 'name'"/>
-                                <a-input v-model="record.value" v-if="col == 'value'"/>
+                            </a-form-model-item>
+                            <a-form-model-item v-if="col == 'value'" :prop="'parameters.'+index+'.value'" :rules="ruleForm.proValue">
+                                <a-input v-model="record.value"/>
                             </a-form-model-item>
                         </div>
                     </template>
@@ -97,7 +99,7 @@
                 <a-table bordered :data-source="testcaseForm.setuphooks" :columns="setuphooksColumns" :pagination="false">
                     <template v-for="col in ['sql', 'database']" :slot="col" slot-scope="text, record, index">
                         <div :key="col">
-                            <a-form-model-item prop="inputText" v-if="col == 'sql'">
+                            <a-form-model-item prop="inputText" v-if="col == 'sql'" :prop="'setuphooks.'+index+'.sql'" :rules="ruleForm.proSql">
                                 <a-input v-model="record.sql"/>
                             </a-form-model-item>
                             <a-form-model-item v-else>
@@ -131,9 +133,11 @@
 
                     >
                         <div :key="col">
-                            <a-form-model-item prop="inputText">
-                            <a-input v-model="record.keyName" v-if="col =='key'"/>
-                            <input v-model="record.value" v-else/>
+                            <a-form-model-item :prop="'reqHeaders.'+index+'.keyName'" :rules="ruleForm.proName" v-if="col =='key'">
+                            <a-input v-model="record.keyName"/>
+                            </a-form-model-item>
+                            <a-form-model-item v-else :prop="'reqHeaders.'+index+'.value'" :rules="ruleForm.proValue">
+                                <input v-model="record.value"/>
                             </a-form-model-item>
                         </div>
                     </template>
@@ -158,11 +162,13 @@
 
                     >
                         <div :key="col">
-                            <a-form-model-item prop="inputText">
+                            <a-form-model-item :prop="'reqParams.'+index+'.keyName'" :rules="ruleForm.proName"  v-if="col == 'key'">
                             <a-input
-                                    v-model="record.keyName" v-if="col == 'key'"/>
-                                <a-input v-model="record.value" v-if="col == 'value'"/>
+                                    v-model="record.keyName"/>
                              </a-form-model-item>
+                            <a-form-model-item v-if="col == 'value'" :prop="'reqParams.'+index+'.value'" :rules="ruleForm.proValue">
+                                <a-input v-model="record.value" />
+                            </a-form-model-item>
 
                         </div>
                     </template>
@@ -239,12 +245,15 @@
                                     <a-select-option value="Null">Null</a-select-option>
                                 </a-select>
                         </a-form-model-item>
-                        <a-form-model-item prop="inputText" v-else>
+                        <a-form-model-item v-else-if="col == 'name'" :prop="'responses.'+index+'.name'" :rules="ruleForm.proName">
                             <a-input
-                                    v-model="record.name" v-if="col == 'name'"
+                                    v-model="record.name"
                             />
+
+                        </a-form-model-item>
+                        <a-form-model-item  v-else :prop="'responses.'+index+'.expectedValue'" :rules="ruleForm.proValue">
                             <a-input
-                                    v-model="record.expectedValue" v-else
+                                    v-model="record.expectedValue"
                             />
                         </a-form-model-item>
 
@@ -274,6 +283,7 @@
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { addTestcase,interfaceInfo } from '@/services/testcase/index';
     import { configList } from '@/services/testcaseConfig/index';
+    import AFormModelItem from "ant-design-vue/es/form-model/FormItem";
 
 
     interface Testcase {
@@ -293,6 +303,7 @@
 
 
     @Component({
+        components: {AFormModelItem}
     })
     export default class AddCase extends Vue {
         private testcaseForm: Testcase={
@@ -461,6 +472,22 @@
                 message: "请输入路径",
                 trigger: "blur"
             }],
+            proName: [{
+                required: true,
+                message: "请输入name的值",
+                trigger: "blur"
+            }],
+            proValue: [{
+                required: true,
+                message: "请输入value的值",
+                trigger: "blur"
+            }],
+            proSql: [{
+                required: true,
+                message: "请输入sql的值",
+                trigger: "blur"
+            }]
+
             // inputText: [
             //     {
             //         required: true,
@@ -513,7 +540,7 @@
             const newData = {
                 key: (new Date()).valueOf(),
                 name: '',
-                type: '',
+                type: 'String',
                 value: '',
                 database: '',
             };
@@ -583,7 +610,7 @@
                 key: (new Date()).valueOf(),
                 name: '',
                 type: '',
-                comparator: '',
+                comparator: '=',
                 expectedValue: '',
             };
             let that=this;
@@ -617,7 +644,7 @@
                 key: (new Date()).valueOf(),
                 name: '',
                 type: '',
-                comparator: '',
+                comparator: '=',
                 expectedValue: '',
             };
             if(value.key==key){
@@ -720,7 +747,7 @@
                     const newData=[{
                         name: '',
                         type: '',
-                        comparator: '',
+                        comparator: '=',
                         expectedValue: ''
                     }];
                     //新修改
@@ -728,7 +755,7 @@
                     Vue.set(value,'children',[{
                         name: '',
                         type: '',
-                        comparator: '',
+                        comparator: '=',
                         expectedValue: ''
                     }]);
                 }
@@ -830,7 +857,7 @@
                 key: (new Date()).valueOf(),
                 name: '',
                 type: '',
-                comparator: '',
+                comparator: '=',
                 expectedValue: '',
             }];
             var that=this;

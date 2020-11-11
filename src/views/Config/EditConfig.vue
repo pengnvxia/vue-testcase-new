@@ -55,10 +55,11 @@
                                 <a-select-option value="Boolean">Boolean</a-select-option>
                             </a-select>
                         </a-form-model-item>
-                        <a-form-model-item v-else-if="col == 'name'">
+                        <a-form-model-item v-else-if="col == 'name'" :prop="'variablesList.' + index+'.name'"
+                                           :rules="ruleForm.proName">
                             <a-input v-model="record.name"/>
                         </a-form-model-item>
-                        <a-form-model-item v-else>
+                        <a-form-model-item v-else :prop="'variablesList.' + index+'.value'" :rules="ruleForm.proValue">
                             <a-input
                                     v-model="record.value"/>
                         </a-form-model-item>
@@ -141,6 +142,16 @@
                 message: "请选择所属项目",
                 trigger: "change"
             }],
+            proName: [{
+                required: true,
+                message: "请输入name的值",
+                trigger: "blur"
+            }],
+            proValue: [{
+                required: true,
+                message: "请输入value的值",
+                trigger: "blur"
+            }]
 
         }
 

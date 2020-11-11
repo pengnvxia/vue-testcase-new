@@ -1,5 +1,6 @@
 import layout from '@/layout/Index.vue';
 import { RouteConfig } from 'vue-router';
+import testcase from "@/router/testcase";
 
 
 const project: RouteConfig[] = [{
@@ -20,10 +21,13 @@ const project: RouteConfig[] = [{
             component: ()=> import('@/views/Project/Add.vue')
         },
         {
-            path: 'detail/:id',
+            path: '/detail/:id',
             name: 'detail',
             meta:{title:'项目详情',isShow: false},
-            component: ()=> import('@/views/Project/Detail.vue')
+            component: ()=> import('@/views/Project/Detail.vue'),
+            children:[
+                ...testcase
+            ]
         },
         {
             path: 'edit/:id',
@@ -32,24 +36,12 @@ const project: RouteConfig[] = [{
             component: ()=> import('@/views/Project/Edit.vue')
         },
         {
-            // path: 'addcase/:id',
-            path: 'addcase/:projectId/:envId/:id',
-            name: 'addcase',
-            meta: {title:'添加用例',isShow: false},
-            component: ()=> import('@/views/Case/AddCase.vue')
-        },
-        {
-            // path: 'editcase/:id',
-            path: 'editcase/:projectId/:envId/:id',
-            meta: {title:'编辑用例',isShow: false},
-            component: ()=> import('@/views/Case/EditCase.vue')
-        },
-        {
             path: 'report/:id',
             name: 'report',
             meta:{title:'报告',isShow: false},
             component: ()=> import('@/views/Report/Index.vue'),
-        }
+        },
+
 
         // {
         //     path: 'index1',

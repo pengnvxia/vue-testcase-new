@@ -1,6 +1,7 @@
 
 <template>
     <div>
+    <div v-if="$route.meta.levels !== 3">
         <a-radio-group style="margin-top: 16px; margin-bottom: 10px;" v-model="proEnv" @change="moduleList">
             <a-radio-button value="1">
                 测试
@@ -110,6 +111,10 @@
                 </a-form-model-item>
             </a-form-model>
         </a-modal>
+    </div>
+        <div>
+            <router-view v-if="$route.meta.levels === 3"></router-view>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -280,7 +285,7 @@
 
         private handleAddCase(id:number): void{
             this.$router.push({
-                path:`/addcase/${this.$route.params.id}/${this.proEnv}/${id}`
+                path:`/detail/${this.$route.params.id}/addcase/${this.$route.params.id}/${this.proEnv}/${id}`
 
                 // path:`/addcase/${id}`
             });
@@ -294,7 +299,7 @@
 
         private handleEditTestcase(id: number): void{
             this.$router.push({
-                path:`/editcase/${this.$route.params.id}/${this.proEnv}/${id}`
+                path:`/detail/${this.$route.params.id}/editcase/${this.$route.params.id}/${this.proEnv}/${id}`
             })
         }
 
