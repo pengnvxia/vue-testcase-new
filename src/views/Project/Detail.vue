@@ -88,7 +88,7 @@
                     <a-input v-model="interfaceForm.interfaceName" placeholder="输入..."></a-input>
                 </a-form-model-item>
                 <a-form-model-item prop="interfaceAddress" label="地址："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
-                    <a-input v-model="interfaceForm.interfaceAddress" placeholder="输入如/aa/bb"></a-input>
+                    <a-input v-model="interfaceForm.interfaceAddress" placeholder="输入如aa/bb"></a-input>
                 </a-form-model-item>
                 <a-form-model-item prop="interfaceMethod" label="请求类型："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
                     <a-select v-model="interfaceForm.interfaceMethod" defaultValue="GET">

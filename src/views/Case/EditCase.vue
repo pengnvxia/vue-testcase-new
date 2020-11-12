@@ -41,7 +41,7 @@
                 <a-table bordered :data-source="testcaseForm.variables" :columns="variablesColumns" :pagination="false">
                     <template v-for="col in ['name', 'type', 'value', 'database']" :slot="col" slot-scope="text, record, index">
                         <div :key="col">
-                            <a-form-model-item prop="inputText" v-if="col == 'name'" :prop="'variables.'+index+'.name'" :rules="ruleForm.proName">
+                            <a-form-model-item v-if="col == 'name'" :prop="'variables.'+index+'.name'" :rules="ruleForm.proName">
                                 <a-input v-model="record.name"/>
                             </a-form-model-item>
                             <a-form-model-item v-else-if="col == 'value'" :prop="'variables.'+index+'.value'" :rules="ruleForm.proValue">
@@ -100,7 +100,7 @@
                 <a-table bordered :data-source="testcaseForm.setuphooks" :columns="setuphooksColumns" :pagination="false">
                     <template v-for="col in ['sql', 'database']" :slot="col" slot-scope="text, record, index">
                         <div :key="col">
-                            <a-form-model-item prop="inputText" v-if="col == 'sql'" :prop="'setuphooks.'+index+'.sql'" :rules="ruleForm.proSql">
+                            <a-form-model-item v-if="col == 'sql'" :prop="'setuphooks.'+index+'.sql'" :rules="ruleForm.proSql">
                                 <a-input v-model="record.sql"/>
                             </a-form-model-item>
                             <a-form-model-item v-else>
@@ -246,12 +246,15 @@
                                         <a-select-option value="Null">Null</a-select-option>
                                     </a-select>
                                 </a-form-model-item>
-                                <a-form-model-item v-else-if="col == 'name'" :prop="'responses.'+index+'.name'" :rules="ruleForm.proName">
-                                    <a-input
-                                            v-model="record.name"
+<!--                                :prop="'responses.'+index+'.name'" :rules="ruleForm.proName"  先注掉，还有问题-->
+                                <a-form-model-item v-else-if="col == 'name'">
+                                    <a-input id="indexId" v-model.number="record.indexValue" v-if="record.indexValue!=null"></a-input>
+                                    <a-input id="responseName"
+                                             v-model="record.name"
                                     />
                                 </a-form-model-item>
-                                <a-form-model-item  v-else :prop="'responses.'+index+'.expectedValue'" :rules="ruleForm.proValue">
+<!--                                :prop="'responses.'+index+'.expectedValue'" :rules="ruleForm.proValue"-->
+                                <a-form-model-item  v-else>
                                     <a-input
                                             v-model="record.expectedValue"
                                     />
@@ -288,6 +291,7 @@
         testcaseName: string,
         envId: number,
         path: string,
+        method: string,
         configIds: number[],
         requestBody: string,
         variables: any[],
@@ -307,6 +311,7 @@
         private testcaseForm: Testcase={
             testcaseName: '',
             path: '',
+            method: '',
             envId: Number(this.$route.params.envId),
             configIds: [],
             requestBody: '',
@@ -636,7 +641,18 @@
                 expectedValue: '',
             };
             if(value.key==key){
-                previousValue.splice(index+1,0,newData);
+                if(value.indexValue!=null){
+                    previousValue.splice(index+1,0,{
+                        key: (new Date()).valueOf(),
+                        indexValue:0,
+                        name: '',
+                        type: '',
+                        comparator: '=',
+                        expectedValue: '',
+                    });
+                }else {
+                    previousValue.splice(index+1,0,newData);
+                }
             }else if (value.hasOwnProperty("children")) {
                 var that=this;
                 // this.addNewData(value,value.children,key,index);
@@ -732,20 +748,22 @@
             addKeyValue.forEach(function (value:any){
                 value.key=(new Date()).valueOf()+Math.floor(Math.random() * 100000);
                 if((value.type=="Array" || value.type=="Object") && !value.hasOwnProperty("children")){
-                    const newData=[{
-                        name: '',
-                        type: '',
-                        comparator: '=',
-                        expectedValue: ''
-                    }];
-                    //新修改
-                    // value.children = newData;
-                    Vue.set(value,'children',[{
-                        name: '',
-                        type: '',
-                        comparator: '=',
-                        expectedValue: ''
-                    }]);
+                    if(value.type=="Array"){
+                        Vue.set(value,'children',[{
+                            indexValue:0,
+                            name: '',
+                            type: '',
+                            comparator: '=',
+                            expectedValue: ''
+                        }]);
+                    }else {
+                        Vue.set(value,'children',[{
+                            name: '',
+                            type: '',
+                            comparator: '=',
+                            expectedValue: ''
+                        }]);
+                    }
                 }
                 if(value.hasOwnProperty("children")){
                     that.resursionAddKey(value.children);
@@ -842,18 +860,36 @@
         }
 
         private addType(value: any, type: string, key: number): any{
-            const newData = [{
-                key: (new Date()).valueOf(),
-                name: '',
-                type: '',
-                comparator: '=',
-                expectedValue: '',
-            }];
+            // const newData = [{
+            //     key: (new Date()).valueOf(),
+            //     name: '',
+            //     type: '',
+            //     comparator: '=',
+            //     expectedValue: '',
+            // }];
             var that=this;
             value.forEach(function (value: any) {
                 if(value.key == key){
                     if(type=="Array" || type=="Object"){
-                        Vue.set(value,'children',newData);
+                        if(type=="Array"){
+                            Vue.set(value,'children',[{
+                                key: (new Date()).valueOf(),
+                                indexValue:0,
+                                name: '',
+                                type: '',
+                                comparator: '=',
+                                expectedValue: '',
+                            }]);
+
+                        }else {
+                            Vue.set(value,'children',[{
+                                key: (new Date()).valueOf(),
+                                name: '',
+                                type: '',
+                                comparator: '=',
+                                expectedValue: '',
+                            }]);
+                        }
                     }else {
                         Vue.delete(value,'children');
                     }
@@ -904,5 +940,14 @@
     .responseForm{
         display: inline-block;
         width: 80%;
+    }
+    #responseName {
+        display: inline-block;
+        width: 95%;
+    }
+    #indexId {
+        display: inline-block;
+        width: 5%;
+        padding-right: 1px;
     }
 </style>
