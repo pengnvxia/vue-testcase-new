@@ -137,7 +137,7 @@
                             <a-input v-model="record.keyName"/>
                             </a-form-model-item>
                             <a-form-model-item v-else :prop="'reqHeaders.'+index+'.value'" :rules="ruleForm.proValue">
-                                <input v-model="record.value"/>
+                                <a-input v-model="record.value"/>
                             </a-form-model-item>
                         </div>
                     </template>
@@ -245,14 +245,12 @@
                                     <a-select-option value="Null">Null</a-select-option>
                                 </a-select>
                         </a-form-model-item>
-                        <!--                                :prop="'responses.'+index+'.name'" :rules="ruleForm.proName"  先注掉，还有问题-->
                         <a-form-model-item v-else-if="col == 'name'">
                             <a-input id="indexId" v-model.number="record.indexValue" v-if="record.indexValue!=null"></a-input>
                             <a-input id="responseName"
                                     v-model="record.name"
                             />
                         </a-form-model-item>
-<!--                        :prop="'responses.'+index+'.expectedValue'" :rules="ruleForm.proValue"-->
                         <a-form-model-item  v-else>
                             <a-input
                                     v-model="record.expectedValue"
@@ -262,11 +260,7 @@
                     </div>
                 </template>
                 <template slot="operation" slot-scope="text, record, index">
-<!--                    <a-popconfirm-->
-<!--                            v-if="responseColumns.length"-->
-<!--                    >-->
                         <a-icon type="minus" @click="handleDeleteResponse(index,record.key)"/>
-<!--                    </a-popconfirm>-->
                     <a-icon type="plus" @click="handleAddResponse(index,record.key)"/>
                 </template>
                         <a-icon type="plus" slot="footer" v-if="testcaseForm.responses.length<=0" @click="handleAddResponse(0,-1)"/>
@@ -323,12 +317,9 @@
 
         };
 
-        // private selectedItems: string[] = ['Apples'];
         private selectedItemsList: string[]=[];
         private selectedItems: any[] = [];
-        // private options = ['Apples', 'Nails', 'Bananas', 'Helicopters', 'aca', 'bbc'];
         private options: any[]=[];
-        // private notSelectedItems: string[] = [];
         private notSelectedItems: any[] = [];
         private variablesColumns= [
             {
@@ -489,14 +480,6 @@
                 trigger: "blur"
             }]
 
-            // inputText: [
-            //     {
-            //         required: true,
-            //         message: "请输入",
-            //         trigger: "blur"
-            //     }
-            // ]
-
         }
         private inputRule: any = [{
             required: true,
@@ -546,8 +529,6 @@
                 database: '',
             };
             this.testcaseForm.variables.splice(index+1,0,newData);
-            // Vue.set(this.testcaseForm.variables, index, newData)
-
         }
 
         private handleDeleteVariables(index: number): void{
@@ -622,22 +603,6 @@
                     that.addNewData(that.testcaseForm.responses,value,key,index);
                 })
             }
-
-            // var that=this;
-            // this.testcaseForm.responses.forEach(function (value: any) {
-            //     if(value.key==key){
-            //         that.testcaseForm.responses.splice(index+1,0,newData);
-            //         console.log(123456);
-            //     }
-            //     if(value.hasOwnProperty("children")){
-            //         value.children.forEach(function (childrenValue: any) {
-            //             if(childrenValue.key==key){
-            //                 value.children.splice(index+1,0,newData);
-            //             }
-            //         })
-            //     }
-            // })
-            // this.testcaseForm.responses.splice(index+1,0,newData);
         }
 
         private addNewData(previousValue:any,value:any,key:number,index:number): any{
@@ -663,12 +628,8 @@
                 }
             }else if (value.hasOwnProperty("children")) {
                 var that=this;
-                // this.addNewData(value,value.children,key,index);
                 value.children.forEach(function (childrenValue: any) {
                     that.addNewData(value.children,childrenValue,key,index);
-                    // if(childrenValue.key==key){
-                    //     value.children.splice(index+1,0,newData);
-                    // }
                 })
             }
         }
@@ -678,7 +639,6 @@
             this.testcaseForm.responses.forEach(function (value) {
                 that.deleteResponse(that.testcaseForm.responses,value,index,key)
             })
-            // this.testcaseForm.responses.splice(index,1);
         }
 
         private deleteResponse(previousValue: any, value: any, index: number, key: number): void{
@@ -719,18 +679,6 @@
 
             }
             if(testcase.responses.length>0 && testcase.responses.length>0){
-                // for(var i=0;i<testcase.responses.length;i++){
-                //     testcase.responses[i].key=i;
-                //     if(testcase.responses[i].type=="Array" || testcase.responses[i].type=="Object"){
-                //         testcase.responses[i].children=[{
-                //             key: (new Date()).valueOf()+i,
-                //             name: '',
-                //             type: '',
-                //             comparator: '',
-                //             expectedValue: '',
-                //         }]
-                //     }
-                // }
                 this.resursionAddKey(testcase.responses);
 
 
@@ -742,13 +690,6 @@
                     this.selectedItemsList.push(this.selectedItems[i].configName);
                 }
             }
-            // this.testcaseForm=testcase;将testcase对象的引用给了testcaseForm，不正确
-            // this.testcaseForm.responses=testcase.responses;
-
-            // this.testcaseForm.variables=[];
-            // this.testcaseForm.setuphooks=[];
-            // this.testcaseForm.parameters=[];
-            // return this.testcaseForm;
         }
 
         private resursionAddKey(addKeyValue:any): void{
@@ -787,24 +728,53 @@
             });
         }
 
+        private verifyResponse(responses: any): boolean {
+            let that=this;
+            let flag=true;
+            responses.forEach(function (value: any) {
+                if(value.type=="Array" || value.type=="Object"){
+                    if(value.name==""){
+                        flag=false;
+                    }else{
+                        if(value.hasOwnProperty("children")){
+                            flag=that.verifyResponse(value.children);
+                        }
+                    }
+                }else {
+                    if(value.type=="" || value.name=="" || value.expectedValue=="" || value.comparator==""){
+                        flag=false;
+                    }else {
+                        if(value.hasOwnProperty("children")){
+                            flag=that.verifyResponse(value.children);
+                        }
+                    }
+                }
+            })
+            return flag;
+        }
+
 
         private submit(): void {
             const ref: any = this.$refs.testcaseRuleForm;
             ref.validate((valid: boolean) => {
                 if (valid) {
-                    this.processTestcaseForm(this.testcaseForm);
-                    addTestcase(Number(this.$route.params.id), this.testcaseForm).then(
-                        (result: any) => {
-                            if (result.errcode === "0") {
-                                this.$message.success("提交成功");
-                                this.$router.go(-1);
+                    if(this.testcaseForm.responses.length<=0 || this.verifyResponse(this.testcaseForm.responses)){
+                        this.processTestcaseForm(this.testcaseForm);
+                        addTestcase(Number(this.$route.params.id), this.testcaseForm).then(
+                            (result: any) => {
+                                if (result.errcode === "0") {
+                                    this.$message.success("提交成功");
+                                    this.$router.go(-1);
+                                }
+                            },
+                            (err: any) => {
+                                this.$message;
                             }
-                        },
-                        (err: any) => {
-                            this.$message;
-                        }
-                    );
-                } else {
+                        );
+                    }else {
+                    this.$message.error("response中有值未填写")
+                    }
+                }else {
                     return false;
                 }
             })

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import project from './project';
 import config from './config';
+import testcaseGroup from './testcaseGroup';
 
 
 // //\ 屏蔽相同路由时报错
@@ -19,6 +20,7 @@ export const router: Router = new Router({
   routes: [
       ...project,
       ...config,
+      ...testcaseGroup,
     {
       path: '/',
       redirect: '/home',

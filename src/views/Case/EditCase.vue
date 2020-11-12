@@ -42,7 +42,7 @@
                     <template v-for="col in ['name', 'type', 'value', 'database']" :slot="col" slot-scope="text, record, index">
                         <div :key="col">
                             <a-form-model-item v-if="col == 'name'" :prop="'variables.'+index+'.name'" :rules="ruleForm.proName">
-                                <a-input v-model="record.name"/>
+                                <a-input v-model="record.name"  placeholder='sql类型输入格式为["a","b"]'/>
                             </a-form-model-item>
                             <a-form-model-item v-else-if="col == 'value'" :prop="'variables.'+index+'.value'" :rules="ruleForm.proValue">
                                 <a-input v-model="record.value"/>
@@ -771,11 +771,37 @@
             });
         }
 
+        private verifyResponse(responses: any): boolean {
+            let that=this;
+            let flag=true;
+            responses.forEach(function (value: any) {
+                if(value.type=="Array" || value.type=="Object"){
+                    if(value.name==""){
+                        flag=false;
+                    }else{
+                        if(value.hasOwnProperty("children")){
+                            flag=that.verifyResponse(value.children);
+                        }
+                    }
+                }else {
+                    if(value.type=="" || value.name=="" || value.expectedValue=="" || value.comparator==""){
+                        flag=false;
+                    }else {
+                        if(value.hasOwnProperty("children")){
+                            flag=that.verifyResponse(value.children);
+                        }
+                    }
+                }
+            })
+            return flag;
+        }
+
         private submit(): void {
             const ref: any = this.$refs.testcaseRuleForm;
             ref.validate((valid: boolean) => {
                 if (valid) {
-                    this.processTestcaseForm(this.testcaseForm);
+                    if(this.testcaseForm.responses.length<=0 || this.verifyResponse(this.testcaseForm.responses)){
+                        this.processTestcaseForm(this.testcaseForm);
                     editTestcase(Number(this.$route.params.id), this.testcaseForm).then(
                         (result: any) => {
                             if (result.errcode === "0") {
@@ -787,6 +813,9 @@
                             this.$message.error(err.errmsg);
                         }
                     );
+                    }else {
+                        this.$message.error("response中有值未填写")
+                    }
                 } else {
                     return false;
                 }
