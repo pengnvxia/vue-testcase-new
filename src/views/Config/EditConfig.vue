@@ -9,13 +9,10 @@
                     </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-model-item label="所属项目：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }" prop="projectId">
-                        <a-select>
-                            <a-select-option :value="1">
-                                paper
-                            </a-select-option>
-                            <a-select-option :value="2">
-                                paper
+                    <a-form-model-item label="所属项目：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }" prop="projectId">
+                        <a-select v-model="variableForm.projectId">
+                            <a-select-option :value="item.id" v-for="item in projects">
+                                {{item.projectName}}
                             </a-select-option>
                         </a-select>
                     </a-form-model-item>
@@ -35,7 +32,7 @@
                     </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-model-item label="备注：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }">
+                    <a-form-model-item label="备注：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
                         <a-input v-model="variableForm.description"/>
                     </a-form-model-item>
                 </a-col>
@@ -81,6 +78,8 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { configEdit,configDetail } from '@/services/testcaseConfig/index';
+    import { projectList } from '@/services/project/index'
+
     interface Variable {
         key?: number,
         variableId?:number,
@@ -92,19 +91,26 @@
     interface VariableForm {
         configName: string,
         projectId: number|null,
-        envId: number,
+        envId: number|null,
         description?: string|null,
         variablesList: Variable[]
     }
+
+    interface Project {
+        id: number,
+        projectName: string
+    }
+
     @Component
     export default class EditConfig extends Vue{
         private variableForm: VariableForm={
             configName: '',
-            envId: 1,
-            projectId: 1,
+            envId: null,
+            projectId: null,
             description: null,
             variablesList: []
         }
+        private projects:Project[]=[];
         // private variables: Variable[]=[];
         private columns = [
             {
@@ -157,6 +163,19 @@
 
         private mounted():void {
             this.getDetails();
+            this.projectList();
+
+        }
+
+        private projectList(){
+            projectList().then(
+                (result: any)=>{
+                    this.projects=result.retval;
+                },
+                (err: any)=>{
+                    this.$message;
+                }
+            )
         }
 
         private addKey(): void {
@@ -186,28 +205,33 @@
                 value: ''
             };
             this.variableForm.variablesList.splice(index+1,0,newData);
-            console.log(this.variableForm.variablesList,1212121);
         }
 
         private handleDelete(index: number): void {
+            console.log(index);
             this.variableForm.variablesList.splice(index,1);
+            console.log(this.variableForm.variablesList);
         }
 
         private handleSubmit(variableForm: VariableForm): void {
             const ref: any = this.$refs.variablesruleForm;
             ref.validate((valid: boolean) => {
                 if (valid) {
-                    configEdit(Number(this.$route.params.id),this.variableForm).then(
-                        (result: any) => {
-                            if (result.errcode === "0") {
-                                this.$message.success("添加成功！")
-                                this.$router.go(-1);
+                    if(this.variableForm.variablesList.length>0){
+                        configEdit(Number(this.$route.params.id),this.variableForm).then(
+                            (result: any) => {
+                                if (result.errcode === "0") {
+                                    this.$message.success("添加成功！")
+                                    this.$router.go(-1);
+                                }
+                            },
+                            (err: any) => {
+                                this.$message;
                             }
-                        },
-                        (err: any) => {
-                            this.$message;
-                        }
-                    )
+                        )
+                    }else {
+                        this.$message.error("变量未填写！");
+                    }
                 } else {
                     return false;
                 }

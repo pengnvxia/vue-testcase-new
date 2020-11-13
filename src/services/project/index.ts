@@ -86,6 +86,13 @@ export function addModule(envId: number, repositoryId: number, name: string, des
     return Base(config);
 }
 
+export function projectList(){
+    const config: AxiosRequestConfig = {
+        url: `${PROJECTSERVER}/project/little/list`,
+        method: 'get',
+    }
+    return Base(config);
+}
 
 
 

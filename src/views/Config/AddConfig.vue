@@ -9,13 +9,10 @@
             </a-form-model-item>
             </a-col>
             <a-col :span="12">
-            <a-form-model-item label="所属项目：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }" prop="projectId">
-                <a-select>
-                <a-select-option :value="1">
-                    paper
-                </a-select-option>
-                <a-select-option :value="2">
-                    paper
+            <a-form-model-item label="所属项目：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }" prop="projectId">
+                <a-select v-model="variableForm.projectId">
+                <a-select-option :value="item.id" v-for="item in projects">
+                    {{ item.projectName }}
                 </a-select-option>
                 </a-select>
             </a-form-model-item>
@@ -35,7 +32,7 @@
             </a-form-model-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-model-item label="备注：" :label-col="{ span: 2 }" :wrapper-col="{ span: 10 }">
+                    <a-form-model-item label="备注：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
                         <a-input v-model="variableForm.description"/>
                     </a-form-model-item>
                 </a-col>
@@ -81,6 +78,7 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { configCreate } from '@/services/testcaseConfig/index';
+    import { projectList } from '@/services/project/index'
 
     interface Variable {
         key?: number,
@@ -98,6 +96,11 @@
         variablesList: Variable[]
     }
 
+    interface Project {
+        id: number,
+        projectName: string
+    }
+
     @Component({
         components: {}
     })
@@ -107,10 +110,12 @@
         private variableForm: VariableForm={
             configName: '',
             envId: 1,
-            projectId: 1,
+            projectId: null,
             description: null,
             variablesList: []
         }
+        private projects:Project[]=[];
+
         // private variables: Variable[]=[];
         private columns = [
             {
@@ -162,6 +167,21 @@
 
         }
 
+        private mounted(): void {
+            this.projectList();
+        }
+
+        private projectList(){
+            projectList().then(
+                (result: any)=>{
+                    this.projects=result.retval;
+                },
+                (err: any)=>{
+                    this.$message;
+                }
+            )
+        }
+
         private handleAdd(index: number): void {
             const newData = {
                 key: (new Date()).valueOf()+Math.floor(Math.random() * 100000),
@@ -184,20 +204,27 @@
 
 
         private handleSubmit(variableForm: VariableForm): void {
+
+
+
             const ref: any = this.$refs.variablesruleForm;
             ref.validate((valid: boolean) => {
                 if (valid) {
-                    configCreate(this.variableForm).then(
-                        (result: any) => {
-                            if (result.errcode === "0") {
-                                this.$message.success("添加成功！")
-                                this.$router.go(-1);
+                    if(this.variableForm.variablesList.length>0){
+                        configCreate(this.variableForm).then(
+                            (result: any) => {
+                                if (result.errcode === "0") {
+                                    this.$message.success("添加成功！")
+                                    this.$router.go(-1);
+                                }
+                            },
+                            (err: any) => {
+                                this.$message;
                             }
-                        },
-                        (err: any) => {
-                            this.$message;
-                        }
-                    )
+                        )
+                    }else {
+                        this.$message.error("变量未填写！")
+                    }
                 } else {
                     return false;
                 }

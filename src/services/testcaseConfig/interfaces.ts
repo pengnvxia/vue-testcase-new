@@ -8,7 +8,7 @@ export interface Variable {
 export interface ConfigVar {
     configName: string,
     projectId: number|null,
-    envId: number,
+    envId: number|null,
     description?: string|null,
     variablesList: Variable[]
 }
