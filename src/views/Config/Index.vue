@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-form-model layout="inline" class="searchForm">
-        <a-form-model-item label="配置名称：" v-model="configName">
+        <a-form-model-item label="配置名称：">
             <a-input  v-model="configName"></a-input>
         </a-form-model-item>
             <a-form-model-item label="项目名称：">
