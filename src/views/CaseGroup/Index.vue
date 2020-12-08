@@ -23,14 +23,14 @@
             <!--                </a-select>-->
             <!--            </a-form-model-item>-->
             <a-form-model-item>
-                <a-button type="primary" @click="">搜索</a-button>
-                <a-button @click="">重置</a-button>
+                <a-button type="primary" @click="handleSearch">搜索</a-button>
+                <a-button @click="handleReset">重置</a-button>
             </a-form-model-item>
         </a-form-model>
-        <a-button type="primary" class="btn" @click="">
+        <a-button type="primary" class="btn" @click="handleAdd">
             新增
         </a-button>
-        <a-table :columns="columns" :data-source="groupData" rowKey="id" class="groupTable" :pagination="paginationConf" @change="">
+        <a-table :columns="columns" :data-source="groupData" rowKey="id" class="groupTable" :pagination="paginationConf" @change="handlePageChange">
             <span slot="env" slot-scope="envId">
                 {{ envId == 1 ? '测试':'生产' }}
             </span>
@@ -38,7 +38,7 @@
                 {{ updatedAt | formatDate }}
             </span>
                 <span slot="operation" slot-scope="record">
-                <a @click="">编辑</a>
+                <a @click="handleEdit(record.id)">编辑</a>
                 <a @click="">删除</a>
             </span>
                 <span slot="pagination" :default-current="2" :total="50"/>
@@ -50,7 +50,9 @@
 
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import { searchList } from '@/services/caseGroup/index'
+    import { searchList } from '@/services/caseGroup/index';
+    import { Pagination } from "ant-design-vue";
+
 
     interface GroupItem {
         id: number,
@@ -123,7 +125,7 @@
             this.getGroup(this.paginationConf.current,this.pageSize);
         }
 
-        private getGroup(current:number,size:number,groupName?:string|null,projectName?:string|null,envId?:number|null){
+        private getGroup(current:number,size:number,groupName?:string|null,projectName?:string|null,envId?:number|null): void{
             searchList(current,size,groupName,projectName,envId).then(
                 (result: any) => {
                     if (result.errcode === "0") {
@@ -137,6 +139,40 @@
             )
         }
 
+        private handlePageChange(pagination: Pagination): void{
+            this.paginationConf.current = pagination.current as number;
+            if (this.pageSize !== pagination.pageSize) {
+                this.paginationConf.current = 1;
+                this.pageSize = pagination.pageSize as number;
+            }
+            this.getGroup(this.paginationConf.current,this.pageSize,this.groupName,this.projectName,this.envId);
+            document.body.scrollTop = document.documentElement.scrollTop = 0;
+        }
+
+        private handleSearch(): void{
+            this.paginationConf.current=1;
+            this.getGroup(this.paginationConf.current,this.pageSize,this.groupName,this.projectName,this.envId);
+        }
+
+        private handleReset(): void{
+            this.groupName='';
+            this.projectName='';
+            this.envId=1;
+            this.handleSearch();
+        }
+
+        private handleAdd(): void{
+            this.$router.push({
+                name: 'groupAdd'
+            });
+        }
+
+        private handleEdit(id: number): void{
+            this.$router.push({
+                name: 'groupEdit',
+                params: {id: String(id)}
+            })
+        }
     }
 
 </script>

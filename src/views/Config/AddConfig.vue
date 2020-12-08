@@ -78,7 +78,7 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { configCreate } from '@/services/testcaseConfig/index';
-    import { projectList } from '@/services/project/index'
+    import { projectList } from '@/services/project/index';
 
     interface Variable {
         key?: number,

@@ -1,5 +1,7 @@
 const state: RootState = {
-  demo: ''
+  demo: '',
+  caseGroupEditConfig: [],
+  caseGroupEditCase: []
 };
 
 export default state;

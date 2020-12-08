@@ -27,6 +27,9 @@
                         :data-source="interInfoOne.testcaseInfos"
                         :pagination="false" rowKey="caseId"
                 >
+                     <span slot="caseEnv" slot-scope="caseEnvId">
+                                {{ caseEnvId == 1 ? '测试': '生产' }}
+                            </span>
                     <span slot="caseUpdatedAt" slot-scope="caseUpdatedAt">
                         {{ caseUpdatedAt | formatDate }}
                     </span>
@@ -199,7 +202,9 @@
         //
         private innerColumns = [
             {title: '用例名称', dataIndex: 'caseName', key: 'caseName',scopedSlots:{customRender:'caseName'}},
-            {title: '所属环境', dataIndex: 'caseEnvId', key: 'caseEnvId'},
+            {title: '所属环境', dataIndex: 'caseEnvId', key: 'caseEnvId',
+                scopedSlots: { customRender: 'caseEnv' }
+            },
             {title: '最后编辑人', dataIndex: 'caseUpdatedBy', key: 'caseUpdatedBy'},
             {title: '更新时间', dataIndex: 'caseUpdatedAt', key: 'caseUpdatedAt',scopedSlots:{customRender:'caseUpdatedAt'}},
             {
