@@ -40,8 +40,10 @@
         </span>
             <span slot="pagination" :default-current="2" :total="50"/>
         </a-table>
-        <a-button type="primary" @click="handleAdd">添加</a-button>
-        <a-button>取消</a-button>
+        <div class="sub-btn">
+            <a-button type="primary" @click="handleAdd" class="submit-btn">添加</a-button>
+            <a-button @click="handleCancel" class="cancel-btn">取消</a-button>
+        </div>
     </div>
 
 </template>
@@ -202,6 +204,10 @@
             this.$router.go(-1);
         }
 
+        private handleCancel(): void {
+            this.$router.go(-1);
+        }
+
     }
 </script>
 
@@ -224,5 +230,16 @@
         margin-bottom: 20px;
         background-color:#1890ff;
     }
+
+    .sub-btn .submit-btn {
+        left: 50%;
+        margin-left: -90px;
+    }
+
+    .sub-btn .cancel-btn {
+        left: 50%;
+        margin-left: 30px;
+    }
+
 
 </style>

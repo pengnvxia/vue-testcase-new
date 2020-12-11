@@ -30,8 +30,10 @@
                     </a-table>
                 </a-tab-pane>
             </a-tabs>
-        <a-button type="primary" @click="handleAdd">添加</a-button>
-        <a-button>取消</a-button>
+        <div class="btn">
+            <a-button type="primary" @click="handleAdd" class="submit-btn">添加</a-button>
+            <a-button @click="handleBack" class="cancel-btn">取消</a-button>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -211,6 +213,10 @@
             this.$router.go(-1);
         }
 
+        private handleBack():void {
+            this.$router.go(-1);
+        }
+
     }
 
 </script>
@@ -218,6 +224,15 @@
     span a {
         display: inline-block;
         margin-right: 10px;
+    }
+    .btn .submit-btn {
+        left: 50%;
+        margin-left: -90px;
+    }
+
+    .btn .cancel-btn {
+        left: 50%;
+        margin-left: 30px;
     }
 </style>
 

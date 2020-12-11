@@ -11,6 +11,7 @@
             <a-col :span="12">
             <a-form-model-item label="所属项目：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
                 <a-select v-model="testcaseGroupForm.projectId">
+                    <a-select-option :value="0">请选择</a-select-option>
                     <a-select-option :value="item.id" v-for="item in projects">
                         {{ item.projectName }}
                     </a-select-option>
@@ -91,7 +92,7 @@
                         </a-table>
                     </a-collapse-panel>
                     <a-collapse-panel key="setupHooks" header="SetupHooks">
-                        <a-table :columns="setuphooksColumns" :pagination="false" :data-source="testcaseGroupForm.setupHooks">
+                        <a-table :columns="setuphooksColumns" :pagination="false" :data-source="testcaseGroupForm.setuphooks">
                             <template v-for="col in ['sql','database']"
                                       :slot="col"
                                       slot-scope="text,record,index">
@@ -108,7 +109,7 @@
                                 <a-icon type="minus" @click="handleDeleteSetupHooks(index)"/>
                                 <a-icon type="plus" @click="handleAddSetupHooks(index)"/>
                             </template>
-                            <a-icon type="plus" slot="footer" v-if="testcaseGroupForm.setupHooks.length<=0" @click="handleAddSetupHooks(0)"/>
+                            <a-icon type="plus" slot="footer" v-if="testcaseGroupForm.setuphooks.length<=0" @click="handleAddSetupHooks(0)"/>
                         </a-table>
                     </a-collapse-panel>
                 </a-collapse>
@@ -123,7 +124,7 @@
                     <a-button type="primary" icon="plus" ghost @click="handleChooseConfig" class="btn">
                         选择配置项
                     </a-button>
-                    <a-table :columns="editConfigs" :data-source="chooseConfig" rowKey="id">
+                    <a-table :columns="editConfigs" :data-source="chooseConfig" rowKey="id" :pagination="false">
                         <span slot="operation" slot-scope="text,record,index">
                             <a-icon type="minus" @click="handleDeleteConfig(index)"/>
                         </span>
@@ -133,32 +134,69 @@
                     <a-button type="primary" icon="plus" ghost @click="handleChooseCase" class="btn">
                         选择用例
                     </a-button>
-                    <a-table :columns="editCases" :data-source="chooseCase" rowKey="caseId">
+                    <a-table :columns="editCases" :data-source="chooseCase" rowKey="caseId" :pagination="false">
                         <span slot="operation" slot-scope="text,record,index">
                             <a-icon type="minus" @click="handleDeleteCase(index)"/>
                         </span>
                     </a-table>
                 </div>
             </div>
-
+            <div class="btn">
+                <a-button type="primary" @click="handleAddCaseGroup" class="submit-btn">添加</a-button>
+                <a-button @click="handleCancel" class="cancel-btn">取消</a-button>
+            </div>
             </div>
         <div>
             <router-view v-if="$route.meta.levels === 3"></router-view>
         </div>
+
     </div>
 </template>
 
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { projectList } from '@/services/project/index';
+    import { addGroup } from '@/services/caseGroup/index';
 
-    interface TestcaseGroup {
-        projectName: string,
-        projectId: number|null,
+    // interface TestcaseGroup {
+    //     projectName: string,
+    //     projectId: number|null,
+    //     envId: number,
+    //     variables: any[],
+    //     parameters: any[],
+    //     setuphooks: any[]
+    // }
+
+    interface GroupDetail {
+        id?: number,
+        groupName: string,
+        projectId: number,
         envId: number,
-        variables: any[],
-        parameters: any[],
-        setupHooks: any[]
+        testcaseIds: string,
+        configIds?: string|null,
+        variables: Variable[],
+        parameters: Parameter[],
+        setuphooks: Setuphook[]
+    }
+
+    interface Variable {
+        id?: number,
+        name: string,
+        type: string,
+        value: string,
+        databaseId?: number
+    }
+
+    interface Parameter {
+        id?: number,
+        name: string,
+        value: string
+    }
+
+    interface Setuphook {
+        id?: number,
+        sql: string,
+        databaseId: number|null
     }
 
     interface Project {
@@ -183,13 +221,15 @@
     })
 
     export default class AddGroup extends Vue {
-        private testcaseGroupForm={
+        private testcaseGroupForm: GroupDetail={
             groupName: '',
-            projectId: null,
+            projectId: 0,
             envId: 1,
+            testcaseIds: '',
+            configIds: null,
             variables: [],
             parameters: [],
-            setupHooks: []
+            setuphooks: []
         }
 
         private projects: Project[]=[];
@@ -226,7 +266,7 @@
                 name: '',
                 type: 'String',
                 value: '',
-                databaseId: ''
+                databaseId: 0
             };
             this.testcaseGroupForm.variables.splice(index+1,0,newData);
         }
@@ -252,13 +292,13 @@
             const newData = {
                 key: (new Date()).valueOf(),
                 sql: '',
-                databaseId: ''
+                databaseId: null
             };
-            this.testcaseGroupForm.setupHooks.splice(index+1,0,newData);
+            this.testcaseGroupForm.setuphooks.splice(index+1,0,newData);
         }
 
         private handleDeleteSetupHooks(index: number): void {
-            this.testcaseGroupForm.setupHooks.splice(index,1);
+            this.testcaseGroupForm.setuphooks.splice(index,1);
         }
 
         private handleChooseCase(): void {
@@ -282,6 +322,42 @@
         private handleDeleteCase(index: number): void {
             this.chooseCase.splice(index,1);
             this.$store.commit('caseGroupEditCase',this.chooseCase);
+        }
+
+        private handleAddCaseGroup(): void {
+            let that=this;
+            if(this.chooseConfig.length>0){
+                let configList: number[]=[];
+                this.chooseConfig.forEach(function (value: ChooseConfig) {
+                    configList.push(value.id);
+                });
+                this.testcaseGroupForm.configIds='['+String(configList)+']';
+            }
+            if(this.chooseCase.length>0){
+                let caseList: number[]=[];
+                this.chooseCase.forEach(function (value: ChooseCase) {
+                    caseList.push(value.caseId);
+                });
+                this.testcaseGroupForm.testcaseIds='['+String(caseList)+']';
+            }
+            addGroup(this.testcaseGroupForm).then(
+                (result: any)=>{
+                    if (result.errcode === "0") {
+                        this.$message.success("添加成功！")
+                        this.$router.go(-1);
+                        this.$store.commit('caseGroupEditConfig',[]);
+                        this.$store.commit('caseGroupEditCase',[]);
+                    }
+                },
+                (err: any)=>{
+                    this.$message;
+                }
+            )
+
+        }
+
+        private handleCancel(): void {
+            this.$router.go(-1);
         }
 
         private variablesColumns= [
@@ -404,7 +480,19 @@
     }
 
     .btn {
-        margin-bottom: 5px;
+        margin-top: 20px;
     }
+
+    .btn .submit-btn {
+        left: 50%;
+        margin-left: -90px;
+    }
+
+    .btn .cancel-btn {
+        left: 50%;
+        margin-left: 30px;
+    }
+
+
 
 </style>

@@ -38,8 +38,9 @@
                 {{ updatedAt | formatDate }}
             </span>
                 <span slot="operation" slot-scope="record">
+                <a @click="handleRun(record.id)">运行</a>
                 <a @click="handleEdit(record.id)">编辑</a>
-                <a @click="">删除</a>
+                <a @click="handleDelete(record.id)">删除</a>
             </span>
                 <span slot="pagination" :default-current="2" :total="50"/>
         </a-table>
@@ -52,6 +53,7 @@
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { searchList } from '@/services/caseGroup/index';
     import { Pagination } from "ant-design-vue";
+    import { runGroup,deleteGroup } from "@/services/caseGroup/index";
 
 
     interface GroupItem {
@@ -122,7 +124,7 @@
         ]
 
         private mounted():void {
-            this.getGroup(this.paginationConf.current,this.pageSize);
+            this.getGroup(this.paginationConf.current,this.pageSize,null,null,1);
         }
 
         private getGroup(current:number,size:number,groupName?:string|null,projectName?:string|null,envId?:number|null): void{
@@ -172,6 +174,36 @@
                 name: 'groupEdit',
                 params: {id: String(id)}
             })
+        }
+
+        private handleRun(id: number): void {
+            let groupIds: number[]=[];
+            groupIds.push(id);
+            runGroup(groupIds).then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.$message.success("正在运行用例组，请到报告页面查看结果！");
+                    }
+                },
+                (err: any) => {
+                    this.$message.error(err.message);
+                }
+            )
+        }
+
+        private handleDelete(id: number): void {
+            deleteGroup(id).then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.$message.success("删除成功！");
+                        this.paginationConf.current=1;
+                        this.getGroup(this.paginationConf.current,this.pageSize,this.groupName,this.projectName,this.envId);
+                    }
+                },
+                (err: any) => {
+                    this.$message.error(err.message);
+                }
+            )
         }
     }
 
