@@ -141,7 +141,7 @@
                     </a-table>
                 </div>
             </div>
-            <div class="btn">
+            <div class="button-o">
             <a-button type="primary" @click="handleEditCaseGroup" class="submit-btn">更新</a-button>
             <a-button @click="handleCancel" class="cancel-btn">取消</a-button>
             </div>
@@ -229,6 +229,7 @@
 
         //是个变量
         get chooseConfig(): ChooseConfig[] {
+            console.log(this.$store.getters.caseGroupEditConfig,989898);
             return this.$store.getters.caseGroupEditConfig;
         }
 
@@ -257,6 +258,7 @@
                 (result: any)=>{
                     this.testcaseGroupForm=result.retval;
                     this.$store.commit('caseGroupEditConfig',result.retval.configIds);
+                    console.log(979797);
                     this.$store.commit('caseGroupEditCase',result.retval.testcaseIds);
 
                 },
@@ -338,6 +340,8 @@
                     configList.push(value.id);
                 });
                 this.testcaseGroupForm.configIds='['+String(configList)+']';
+            }else {
+                this.testcaseGroupForm.configIds=null;
             }
             if(this.chooseCase.length>0){
                 let caseList: number[]=[];
@@ -452,14 +456,6 @@
 
         private editCases = [
             {
-                title: 'id',
-                dataIndex: 'id',
-            },
-            {
-                title: 'interfaceName',
-                dataIndex: 'interfaceName'
-            },
-            {
                 title: 'caseId',
                 dataIndex: 'caseId',
             },
@@ -487,12 +483,16 @@
         margin-bottom: 20px;
     }
 
-    .btn .submit-btn {
+    .button-o {
+        margin-top: 20px;
+    }
+
+    .button-o .submit-btn {
         left: 50%;
         margin-left: -90px;
     }
 
-    .btn .cancel-btn {
+    .button-o .cancel-btn {
         left: 50%;
         margin-left: 30px;
     }

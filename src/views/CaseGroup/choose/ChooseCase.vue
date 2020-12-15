@@ -12,6 +12,7 @@
                             {{ updatedAt | formatDate }}
                         </template>
                         <span slot="operation" slot-scope="text"/>
+
                         <a-table
                                 :row-selection="rowSelection"
                                 slot="expandedRowRender"
@@ -62,10 +63,12 @@
     }
 
     interface EditCase {
-        id: number;
-        interfaceName: string;
+        // id: number;
+        // interfaceName: string;
         caseId: number;
         caseName: string;
+        caseEnvId: number;
+        caseUpdatedAt: string;
     }
     @Component
     export default class Detail extends Vue {
@@ -115,7 +118,11 @@
             ]
         }
         private columns = [
-            {title: '接口名称', dataIndex: 'name', key: 'name'},
+            {title: '接口名称', dataIndex: 'name', key: 'name',
+                // children: [
+                //     {title: '用例名称', dataIndex: 'caseName', key: 'caseName',scopedSlots:{customRender:'caseName'}}
+                // ]
+            },
             {title: '地址', dataIndex: 'url', key: 'url'},
             {title: '最后编辑人', dataIndex: 'updatedBy', key: 'updatedBy'},
             {title: '更新时间', dataIndex: 'updatedAt', key: 'updatedAt',scopedSlots: {customRender: 'updatedAt'}},
@@ -175,47 +182,71 @@
             this.visible = false;
         }
 
-        private selectedRowKeys: any[] = [];
+        private selectedRowKeys: EditCase[] = [];
 
 
         //计算方法
         private get rowSelection(): object {
             // const selectedRowKeys: string[] = this.selectedRowKeys;
             return {
-                onChange: this.handleSelectKeyChange,
+                // onChange: this.handleSelectKeyChange,
+                onSelect: this.handleSelect,
+                onSelectAll: this.handleSelectAll,
                 hideDefaultSelections: true
             }
         }
 
-        private handleSelectKeyChange(selectedRowKeys: Array<string | number>): any {
-            this.selectedRowKeys = selectedRowKeys as string[];
-            // this.selectedRowKeys = this.selectedRowKeys.concat(selectedRowKeys as string[]);
-            // let temporaryList: string[]=[];
-            // for(let i=0;i<this.selectedRowKeys.length;i++){
-            //     if(this.selectedRowKeys.indexOf(this.selectedRowKeys[i])==i)
-            //     temporaryList.push(this.selectedRowKeys[i]);
-            // }
-            // this.selectedRowKeys=temporaryList;
-
-        }
-
         private handleAdd(): void {
-            let editCaseList: EditCase[] = [];
-            if(this.selectedRowKeys.length>0){
-                this.selectedRowKeys.forEach(function (value: string) {
-                    let temporyList = value.split('_');
-                    console.log(temporyList,9999);
-                    editCaseList.push({id:Number(temporyList[0]),interfaceName:temporyList[1],caseId:Number(temporyList[2]),caseName:temporyList[3]})
-                })
-            }
-            console.log(editCaseList,8888);
-            this.$store.commit('caseGroupEditCase',editCaseList);
+            // let editCaseList: EditCase[] = [];
+            // if(this.selectedRowKeys.length>0){
+            //     this.selectedRowKeys.forEach(function (value: string) {
+            //         let temporyList = value.split('_');
+            //         console.log(temporyList,9999);
+            //         editCaseList.push({id:Number(temporyList[0]),interfaceName:temporyList[1],caseId:Number(temporyList[2]),caseName:temporyList[3]})
+            //     })
+            // }
+            // console.log(editCaseList,8888);
+            console.log(this.selectedRowKeys,88888)
+            this.$store.commit('caseGroupEditCase',this.selectedRowKeys);
             this.$router.go(-1);
         }
 
         private handleBack():void {
             this.$router.go(-1);
         }
+
+        // private handleExpand(id:number[]): void{
+        //     if(id.length==2){
+        //         id.splice(0,1);
+        //     }
+        //     this.expendRoykeys.push(String(id[0]));
+        //     console.log(id,333);
+        // }
+        private handleSelect(record: any,selected: boolean): void {
+            if(selected){
+                this.selectedRowKeys.push(record);
+            }else {
+                let recordIndex = this.selectedRowKeys.findIndex(
+                    function(value: any) {
+                        value==record;
+                    });
+                this.selectedRowKeys.splice(recordIndex,1);
+            }
+            // console.log(record,11111);
+            // console.log(selected,22222);
+        }
+
+        private handleSelectAll(selected: boolean,selectedRows: any,changeRows: any): void{
+            // console.log(selected,555);
+            // console.log(selectedRows,666);
+            // console.log(changeRows,777);
+        }
+
+        // private handleExpand(aaa: any): void {
+        //     console.log(aaa,999999)
+        //     // this.expendRoykeys.push("139");
+        //     // console.log(this.expendRoykeys,88888);
+        // }
 
     }
 

@@ -185,23 +185,37 @@
         private get rowSelection(): object {
             // const selectedRowKeys: string[] = this.selectedRowKeys;
             return {
-                onChange: this.handleSelectKeyChange,
+                // onChange: this.handleSelectKeyChange,
+                onSelect: this.handleSelect,
                 hideDefaultSelections: true
             }
         }
 
-        private handleSelectKeyChange(selectedRowKeys: Array<string>): any {
-            this.selectedRowKeys=[];
-            let that = this;
-            (selectedRowKeys as string[]).forEach(function(value: string){
-                let temporyList = value.split('_');
-                that.selectedRowKeys.push({id:Number(temporyList[0]),configName: temporyList[1]})
-            })
+        private handleSelect(record: any,selected: boolean): void {
+            if(selected){
+                this.selectedRowKeys.push({id: record.id,configName: record.configName});
+            }else {
+                let recordIndex = this.selectedRowKeys.findIndex(
+                    function(value: any) {
+                        value.id==record.id;
+                    });
+                this.selectedRowKeys.splice(recordIndex,1);
+            }
         }
 
+        // private handleSelectKeyChange(selectedRowKeys: Array<string>): any {
+        //     this.selectedRowKeys=[];
+        //     let that = this;
+        //     (selectedRowKeys as string[]).forEach(function(value: string){
+        //         let temporyList = value.split('_');
+        //         that.selectedRowKeys.push({id:Number(temporyList[0]),configName: temporyList[1]})
+        //     })
+        // }
+
         private handleAdd(): void {
+            console.log(this.selectedRowKeys,909090);
             this.$store.commit('caseGroupEditConfig',this.selectedRowKeys);
-            this.$router.go(-1);
+            // this.$router.go(-1);
         }
 
         private handleCancel(): void {

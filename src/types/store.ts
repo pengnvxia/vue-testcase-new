@@ -16,8 +16,8 @@ interface EditConfig {
 }
 
 interface EditCase {
-  id: number;
-  interfaceName: string;
   caseId: number;
   caseName: string;
+  caseEnvId: number;
+  caseUpdatedAt: string;
 }

@@ -141,7 +141,7 @@
                     </a-table>
                 </div>
             </div>
-            <div class="btn">
+            <div class="button-o">
                 <a-button type="primary" @click="handleAddCaseGroup" class="submit-btn">添加</a-button>
                 <a-button @click="handleCancel" class="cancel-btn">取消</a-button>
             </div>
@@ -444,14 +444,6 @@
 
         private editCases = [
             {
-                title: 'id',
-                dataIndex: 'id',
-            },
-            {
-                title: 'interfaceName',
-                dataIndex: 'interfaceName'
-            },
-            {
                 title: 'caseId',
                 dataIndex: 'caseId',
             },
@@ -479,20 +471,18 @@
         margin-bottom: 20px;
     }
 
-    .btn {
+    .button-o {
         margin-top: 20px;
     }
 
-    .btn .submit-btn {
+    .button-o .submit-btn {
         left: 50%;
         margin-left: -90px;
     }
 
-    .btn .cancel-btn {
+    .button-o .cancel-btn {
         left: 50%;
         margin-left: 30px;
     }
-
-
 
 </style>
