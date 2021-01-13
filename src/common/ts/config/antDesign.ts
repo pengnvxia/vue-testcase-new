@@ -88,5 +88,6 @@ Vue.use(Avatar);
 Vue.use(Drawer);
 Vue.use(Popconfirm);
 Vue.use(Collapse);
+
 Vue.prototype.$message = message;
 Vue.prototype.$confirm = confirm;

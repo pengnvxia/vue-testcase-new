@@ -1,7 +1,7 @@
 import layout from '@/layout/Index.vue';
 import { RouteConfig } from 'vue-router';
 import choose from "@/router/choose";
-
+import editChoose from "@/router/editChoose";
 
 const testcaseGroup: RouteConfig[] = [{
     path: '/',
@@ -29,7 +29,7 @@ const testcaseGroup: RouteConfig[] = [{
             meta:{title:'添加配置',isShow: false},
             component: ()=> import('@/views/CaseGroup/EditGroup.vue'),
             children: [
-                ...choose
+                ...editChoose
             ]
         }
     ]

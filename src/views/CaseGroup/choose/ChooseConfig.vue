@@ -130,18 +130,7 @@
 
         private mounted():void {
             this.getConfigList(this.paginationConf.current,this.pageSize);
-            // this.processConfig();
         }
-
-        // private processConfig(): void {
-        //     let that=this;
-        //     if(this.$store.getters.caseGroupEditConfig.length>0){
-        //         (this.$store.getters.caseGroupEditConfig).forEach(function(value: ChooseConfig){
-        //             that.selectedRowKeys.push(value.id+'_'+value.configName);
-        //         })
-        //     }
-        //
-        // }
 
         private getConfigList(current: number, size: number,configName? : string,envId? : number|null,projectName? : string,lastUpdatedBy? : string){
             searchConfig(current,size,configName,envId,projectName,lastUpdatedBy).then(
@@ -156,7 +145,6 @@
                 }
             )
         }
-
 
         private handlePageChange(pagination: Pagination): void{
             this.paginationConf.current = pagination.current as number;
@@ -183,9 +171,7 @@
 
 
         private get rowSelection(): object {
-            // const selectedRowKeys: string[] = this.selectedRowKeys;
             return {
-                // onChange: this.handleSelectKeyChange,
                 onSelect: this.handleSelect,
                 hideDefaultSelections: true
             }
@@ -203,19 +189,27 @@
             }
         }
 
-        // private handleSelectKeyChange(selectedRowKeys: Array<string>): any {
-        //     this.selectedRowKeys=[];
-        //     let that = this;
-        //     (selectedRowKeys as string[]).forEach(function(value: string){
-        //         let temporyList = value.split('_');
-        //         that.selectedRowKeys.push({id:Number(temporyList[0]),configName: temporyList[1]})
-        //     })
-        // }
-
         private handleAdd(): void {
-            console.log(this.selectedRowKeys,909090);
-            this.$store.commit('caseGroupEditConfig',this.selectedRowKeys);
-            // this.$router.go(-1);
+            let oldConfig:any[]=[];
+            oldConfig = this.$store.getters.caseGroupEditConfig;
+            if(this.selectedRowKeys.length>0){
+                for(let i=0;i<this.selectedRowKeys.length;i++){
+                    oldConfig.push(this.selectedRowKeys[i]);
+                }
+            }
+            if(oldConfig.length>0){
+                for(let i=0;i<oldConfig.length;i++){
+                    for(let j=i+1;j<oldConfig.length;j++){
+                        if(oldConfig[i].id==oldConfig[j].id){
+                            oldConfig.splice(j,1);
+                            j--;
+                        }
+                    }
+                }
+
+            }
+            this.$store.commit('caseGroupEditConfig',oldConfig);
+            this.$router.go(-1);
         }
 
         private handleCancel(): void {

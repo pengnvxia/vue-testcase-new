@@ -1,5 +1,5 @@
 <template>
-    <a-form-model :model="testcaseForm" class="caseForm" :rules="ruleForm" ref="testcaseRuleForm">
+    <a-form-model :model="testcaseForm" class="caseForm222" :rules="ruleForm" ref="testcaseRuleForm">
         <div>
             <a-row>
                 <a-col :span="12">
@@ -169,7 +169,6 @@
                             <a-form-model-item v-if="col == 'value'" :prop="'reqParams.'+index+'.value'" :rules="ruleForm.proValue">
                                 <a-input v-model="record.value" />
                             </a-form-model-item>
-
                         </div>
                     </template>
                     <template slot="operation" slot-scope="text, record, index">
@@ -267,6 +266,8 @@
                     </a-table>
                 </div>
             </a-collapse-panel>
+            <CaseComponents :columnsName="bbb" :item="aaa" :rulesInfo="ruleForm.proSql"></CaseComponents>
+            <a-collapse-panel header="Extract"></a-collapse-panel>
         </a-collapse>
         <a-form-model-item class="btn">
             <a-button type="primary" class="saveBtn" @click="submit">提交</a-button>
@@ -279,6 +280,7 @@
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { addTestcase,interfaceInfo } from '@/services/testcase/index';
     import { configList } from '@/services/testcaseConfig/index';
+    import CaseComponents from '@/components/CaseComponents/CaseComponents.vue';
 
 
     interface Testcase {
@@ -298,9 +300,42 @@
 
 
     @Component({
-        components: {}
+        components: {
+            CaseComponents,
+        }
     })
     export default class AddCase extends Vue {
+        private aaa={
+            type:'Extract',
+            content: [{
+                key: 1,
+                name: 'ssss',
+                sql: 'cccc'
+            }]
+        }
+
+        private bbb=[
+            {
+                title: 'name',
+                dataIndex: 'name',
+                // width: '15%',
+                // scopedSlots: { customRender: 'name' },
+            },
+            {
+                title: 'sql',
+                dataIndex: 'sql',
+                // width: '10%',
+                // scopedSlots: { customRender: 'sql' },
+            },
+            {
+                title: 'operation',
+                dataIndex: 'operation',
+                // scopedSlots: { customRender: 'operation' },
+            },
+        ];
+
+
+
         private testcaseForm: Testcase={
             testcaseName: '',
             path: '',

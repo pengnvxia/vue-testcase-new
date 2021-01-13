@@ -229,7 +229,6 @@
 
         //是个变量
         get chooseConfig(): ChooseConfig[] {
-            console.log(this.$store.getters.caseGroupEditConfig,989898);
             return this.$store.getters.caseGroupEditConfig;
         }
 
@@ -310,15 +309,16 @@
         }
 
         private handleChooseCase(): void {
+            console.log('选择用例');
             this.$router.push({
-                name: 'chooseCase',
+                name: 'editChooseCase',
                 params: {id: String(this.chooseProjectId)}
             });
         }
 
         private handleChooseConfig(): void {
             this.$router.push({
-                name: 'chooseConfig'
+                name: 'editChooseConfig'
             });
         }
 

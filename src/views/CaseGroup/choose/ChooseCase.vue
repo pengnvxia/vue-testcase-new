@@ -31,7 +31,7 @@
                     </a-table>
                 </a-tab-pane>
             </a-tabs>
-        <div class="btn">
+        <div class="sub-btn">
             <a-button type="primary" @click="handleAdd" class="submit-btn">添加</a-button>
             <a-button @click="handleBack" class="cancel-btn">取消</a-button>
         </div>
@@ -197,17 +197,24 @@
         }
 
         private handleAdd(): void {
-            // let editCaseList: EditCase[] = [];
-            // if(this.selectedRowKeys.length>0){
-            //     this.selectedRowKeys.forEach(function (value: string) {
-            //         let temporyList = value.split('_');
-            //         console.log(temporyList,9999);
-            //         editCaseList.push({id:Number(temporyList[0]),interfaceName:temporyList[1],caseId:Number(temporyList[2]),caseName:temporyList[3]})
-            //     })
-            // }
-            // console.log(editCaseList,8888);
-            console.log(this.selectedRowKeys,88888)
-            this.$store.commit('caseGroupEditCase',this.selectedRowKeys);
+            let oldCase:any[]=[];
+            oldCase = this.$store.getters.caseGroupEditCase;
+            if(this.selectedRowKeys.length>0){
+                for(let i=0;i<this.selectedRowKeys.length;i++){
+                    oldCase.push(this.selectedRowKeys[i]);
+                }
+            }
+            if(oldCase.length>0){
+                for(let i=0;i<oldCase.length;i++){
+                    for(let j=i+1;j<oldCase.length;j++){
+                        if(oldCase[i].caseId==oldCase[j].caseId){
+                            oldCase.splice(j,1);
+                            j--;
+                        }
+                    }
+                }
+            }
+            this.$store.commit('caseGroupEditCase',oldCase);
             this.$router.go(-1);
         }
 
@@ -256,12 +263,12 @@
         display: inline-block;
         margin-right: 10px;
     }
-    .btn .submit-btn {
+    .sub-btn .submit-btn {
         left: 50%;
         margin-left: -90px;
     }
 
-    .btn .cancel-btn {
+    .sub-btn .cancel-btn {
         left: 50%;
         margin-left: 30px;
     }
