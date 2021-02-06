@@ -266,8 +266,9 @@
                     </a-table>
                 </div>
             </a-collapse-panel>
-            <CaseComponents :columnsName="bbb" :item="aaa" :rulesInfo="ruleForm.proSql"></CaseComponents>
-            <a-collapse-panel header="Extract"></a-collapse-panel>
+            <a-collapse-panel  key="extract" header="Extract">
+                <CaseExtract :item="testcaseForm.extracts" :rulesInfoName="ruleForm.proName" :rulesInfoResponseKey="ruleForm.proValue"></CaseExtract>
+            </a-collapse-panel>
         </a-collapse>
         <a-form-model-item class="btn">
             <a-button type="primary" class="saveBtn" @click="submit">提交</a-button>
@@ -280,7 +281,7 @@
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { addTestcase,interfaceInfo } from '@/services/testcase/index';
     import { configList } from '@/services/testcaseConfig/index';
-    import CaseComponents from '@/components/CaseComponents/CaseComponents.vue';
+    import CaseExtract from '@/components/CaseComponents/CaseExtract.vue';
 
 
     interface Testcase {
@@ -295,44 +296,43 @@
         setuphooks: any[],
         reqHeaders: any[],
         reqParams: any[],
-        responses: any[]
+        responses: any[],
+        extracts: any[]
+
     }
 
 
     @Component({
         components: {
-            CaseComponents,
+            CaseExtract,
         }
     })
     export default class AddCase extends Vue {
-        private aaa={
-            type:'Extract',
-            content: [{
-                key: 1,
-                name: 'ssss',
-                sql: 'cccc'
-            }]
-        }
+        // private aaa=[{
+        //     key: 1,
+        //     name: 'ssss',
+        //     responseKey: 'cccc'
+        // }]
 
-        private bbb=[
-            {
-                title: 'name',
-                dataIndex: 'name',
-                // width: '15%',
-                // scopedSlots: { customRender: 'name' },
-            },
-            {
-                title: 'sql',
-                dataIndex: 'sql',
-                // width: '10%',
-                // scopedSlots: { customRender: 'sql' },
-            },
-            {
-                title: 'operation',
-                dataIndex: 'operation',
-                // scopedSlots: { customRender: 'operation' },
-            },
-        ];
+        // private bbb=[
+        //     {
+        //         title: 'name',
+        //         dataIndex: 'name',
+        //         // width: '15%',
+        //         // scopedSlots: { customRender: 'name' },
+        //     },
+        //     {
+        //         title: 'sql',
+        //         dataIndex: 'sql',
+        //         // width: '10%',
+        //         // scopedSlots: { customRender: 'sql' },
+        //     },
+        //     {
+        //         title: 'operation',
+        //         dataIndex: 'operation',
+        //         // scopedSlots: { customRender: 'operation' },
+        //     },
+        // ];
 
 
 
@@ -348,7 +348,8 @@
             setuphooks: [],
             reqHeaders: [],
             reqParams: [],
-            responses: []
+            responses: [],
+            extracts: []
 
         };
 
@@ -847,6 +848,11 @@
                 //     delete value.key;
                 // })
                 this.deleteKey(testcase.responses);
+            }
+            if(testcase.extracts.length>0){
+                testcase.extracts.forEach(function (value) {
+                    delete value.key;
+                })
             }
 
             return this.testcaseForm;

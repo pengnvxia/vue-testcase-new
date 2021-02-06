@@ -274,6 +274,9 @@
                     </a-table>
                 </div>
             </a-collapse-panel>
+            <a-collapse-panel  key="extract" header="Extract">
+                <CaseExtract :item="testcaseForm.extracts" :rulesInfoName="ruleForm.proName" :rulesInfoResponseKey="ruleForm.proValue"></CaseExtract>
+            </a-collapse-panel>
         </a-collapse>
         <a-form-model-item class="btn">
             <a-button type="primary" class="saveBtn" @click="submit">提交</a-button>
@@ -286,6 +289,7 @@
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { editTestcase,testcaseInfo } from '@/services/testcase/index';
     import { configList } from '@/services/testcaseConfig/index';
+    import CaseExtract from '@/components/CaseComponents/CaseExtract.vue';
 
     interface Testcase {
         testcaseName: string,
@@ -300,12 +304,15 @@
         reqHeaders: any[],
         reqParams: any[],
         responses: any[]
-        reqBody: {}
+        reqBody: {},
+        extracts: any[]
     }
 
 
     @Component({
-        components: {}
+        components: {
+            CaseExtract,
+        }
     })
     export default class AddCase extends Vue {
         private testcaseForm: Testcase={
@@ -321,7 +328,8 @@
             reqHeaders: [],
             reqParams: [],
             responses: [],
-            reqBody: {}
+            reqBody: {},
+            extracts: []
 
         };
 
@@ -733,6 +741,11 @@
                     testcase.setuphooks[i].key=i;
                 }
             }
+            if(testcase.hasOwnProperty("extracts") && testcase.extracts.length>0){
+                for(var i=0;i<testcase.extracts.length;i++){
+                    testcase.extracts[i].key=i;
+                }
+            }
             Object.assign(this.testcaseForm, testcase);
             this.selectedItems=this.options.filter(o => this.testcaseForm.configIds.includes(o.id));
             if(this.selectedItems.length>0){
@@ -847,6 +860,11 @@
             }
             if(testcase.reqParams.length>0){
                 testcase.reqParams.forEach(function (value) {
+                    delete value.key;
+                })
+            }
+            if(testcase.extracts.length>0){
+                testcase.extracts.forEach(function (value) {
                     delete value.key;
                 })
             }
