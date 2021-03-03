@@ -3,6 +3,8 @@ import Router from 'vue-router';
 import project from './project';
 import config from './config';
 import testcaseGroup from './testcaseGroup';
+import database from './database';
+
 
 
 // //\ 屏蔽相同路由时报错
@@ -21,6 +23,7 @@ export const router: Router = new Router({
       ...project,
       ...config,
       ...testcaseGroup,
+      ...database,
     {
       path: '/',
       redirect: '/home',

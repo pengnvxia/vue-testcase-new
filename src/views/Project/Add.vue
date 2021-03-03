@@ -53,7 +53,7 @@
                     addProject(this.projectForm).then(
                         (result: any) => {
                             if (result.errcode === "0") {
-                                this.$message.success("提交成功");
+                                this.$message.success("提交成功!");
                                 this.$router.push({path:'/index'});
                             }
                         },
