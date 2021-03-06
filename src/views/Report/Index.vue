@@ -17,7 +17,7 @@
 
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import { reportList } from "@/services/report/index";
+    import {groupReportList, reportList} from "@/services/report/index";
 
     interface ReportItem {
         id: number,
@@ -62,16 +62,30 @@
         }
 
         private reportList():void{
-            reportList(Number(this.$route.params.id)).then(
-                (result: any) => {
-                    if (result.errcode === "0") {
-                        this.reportData=result.retval;
+            if(this.$route.query.group==='0'){
+                reportList(Number(this.$route.params.id)).then(
+                    (result: any) => {
+                        if (result.errcode === "0") {
+                            this.reportData=result.retval;
+                        }
+                    },
+                    (err: any) => {
+                        this.$message;
                     }
-                },
-                (err: any) => {
-                    this.$message;
-                }
-            );
+                );
+            }else {
+                groupReportList(Number(this.$route.params.id)).then(
+                    (result: any) => {
+                        if (result.errcode === "0") {
+                            this.reportData=result.retval;
+                        }
+                    },
+                    (err: any) => {
+                        this.$message;
+                    }
+                );
+            }
+
         }
 
         private handleLookRrport(content: string):void{

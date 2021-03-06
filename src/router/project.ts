@@ -41,6 +41,15 @@ const project: RouteConfig[] = [{
             meta:{title:'报告',isShow: false},
             component: ()=> import('@/views/Report/Index.vue'),
         },
+        {
+            path: 'rappage/:id',
+            name: 'rappage',
+            meta: {
+                title:'rap页面',isShow: false
+            },
+            component: ()=> import('@/views/Project/RapPage.vue'),
+
+        }
 
 
         // {

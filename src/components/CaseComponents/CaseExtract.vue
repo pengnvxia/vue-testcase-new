@@ -33,11 +33,17 @@
 <script lang="ts">
     import { Component, Vue, Prop } from "vue-property-decorator";
 
+    interface Extract{
+        key: number,
+        name: string,
+        responseKey: string
+    }
+
     @Component
     export default class CaseExtract extends Vue {
 
         @Prop({type: Array, default: () => []})
-        private readonly item!: [];
+        private readonly item!: Extract[];
 
         @Prop({type: Array, default: () => []})
         private readonly columnsName!:[];
@@ -48,10 +54,10 @@
         @Prop({type: Array, default: () => []})
         private readonly rulesInfoResponseKey!: [];
 
-        private mounted():void {
-            console.log(this.rulesInfoName,8888);
-            console.log(this.item,9999);
-        }
+        // private mounted():void {
+        //     console.log(this.rulesInfoName,8888);
+        //     console.log(this.item,9999);
+        // }
 
         private handleAddExtracts(index: number): void{
             const newData = {

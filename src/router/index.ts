@@ -4,7 +4,7 @@ import project from './project';
 import config from './config';
 import testcaseGroup from './testcaseGroup';
 import database from './database';
-
+import login from './login';
 
 
 // //\ 屏蔽相同路由时报错
@@ -24,6 +24,7 @@ export const router: Router = new Router({
       ...config,
       ...testcaseGroup,
       ...database,
+      ...login,
     {
       path: '/',
       redirect: '/home',
@@ -32,6 +33,12 @@ export const router: Router = new Router({
         isShow: false
       }
     },
+    // {
+    //   path: '/login',
+    //   name: 'login',
+    //   meta: {title:'登录',isShow: false},
+    //   component: ()=> import('@/views/User/Login.vue')
+    // },
     {
       path: '/home',
       name: 'home',
@@ -59,6 +66,26 @@ export const router: Router = new Router({
         isShow: false
       },
       component: () => import(/* webpackChunkName: "notFound" */ '@/views/Error/Index.vue')
-    }
+    },
+    // {
+    //   path: '/webtestcase/login',
+    //   name: 'login',
+    //   meta: {
+    //     title: '登录',
+    //     isShow: false
+    //
+    //   },
+    //   component: () => import(/* webpackChunkName: "notFound" */ '@/views/User/Login.vue')
+    // },
+    // {
+    //   path: '/register',
+    //   name: 'register',
+    //   meta: {
+    //     title: '注册',
+    //     isShow: false
+    //
+    //   },
+    //   component: () => import(/* webpackChunkName: "notFound" */ '@/views/User/Register.vue')
+    // }
   ]
 });

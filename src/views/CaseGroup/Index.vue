@@ -31,6 +31,7 @@
             新增
         </a-button>
         <a-table :columns="columns" :data-source="groupData" rowKey="id" class="groupTable" :pagination="paginationConf" @change="handlePageChange">
+            <a slot="groupName" slot-scope="text,record" @click="handleReport(record.id)">{{text}}</a>
             <span slot="env" slot-scope="envId">
                 {{ envId == 1 ? '测试':'生产' }}
             </span>
@@ -87,7 +88,8 @@
             {
                 title: '用例组名称',
                 dataIndex: 'groupName',
-                key: 'groupName'
+                key: 'groupName',
+                scopedSlots: { customRender: 'groupName' }
             },
             {
                 title: '所属项目',
@@ -204,6 +206,19 @@
                     this.$message.error(err.message);
                 }
             )
+        }
+
+        private handleReport(id:number): void{
+            this.$router.push({
+                name: 'report',
+                params:{
+                    id: String(id),
+                },
+                query:{
+                    group: '1'
+                }
+                // path:`/report/${id}`
+            })
         }
     }
 

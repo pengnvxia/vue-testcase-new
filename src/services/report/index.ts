@@ -8,4 +8,14 @@ export function reportList( id: number): AxiosPromise {
         method: 'get'
     };
     return Base(config);
+    // url: `${PROJECTSERVER}/report/list/${id}?group=${group}`,
+
+}
+
+export function groupReportList( id: number): AxiosPromise {
+    const config: AxiosRequestConfig = {
+        url: `${PROJECTSERVER}/report/group/list/${id}`,
+        method: 'get'
+    };
+    return Base(config);
 }

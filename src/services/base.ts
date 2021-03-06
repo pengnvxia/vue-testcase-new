@@ -9,6 +9,19 @@ import {
 
 } from '@/config/httpCode.ts';
 
+function getToken(): string|null {
+  let token= localStorage.getItem('token');
+  return token;
+}
+
+function isLogin(): boolean {
+  if(getToken()){
+    return true;
+  }else {
+    return false;
+  }
+}
+
 export default function base(propConfig: AxiosRequestConfig, error: boolean = true, id: number = 0): AxiosPromise {
 
   const defaultConfig: AxiosRequestConfig = {
@@ -16,6 +29,13 @@ export default function base(propConfig: AxiosRequestConfig, error: boolean = tr
     headers: {},
     timeout: 60000 * 4
   };
+
+  if (!propConfig.headers || propConfig.headers === undefined) {
+    propConfig.headers = {};
+  }
+
+  isLogin() && ( propConfig.headers = Object.assign(propConfig.headers, {token: getToken()}) );
+
 
   const newConfig: AxiosRequestConfig = Object.assign(defaultConfig, propConfig);
 

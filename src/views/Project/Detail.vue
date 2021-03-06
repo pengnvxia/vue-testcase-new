@@ -16,8 +16,8 @@
                 <template slot="updatedAt" slot-scope="updatedAt">
                     {{ updatedAt | formatDate }}
                 </template>
-        <span slot="operation" slot-scope="text">
-        <a>编辑</a>
+        <span slot="operation" slot-scope="record">
+        <a @click="handleInterInfo(record.id)">编辑</a>
         <a>删除</a>
         </span>
                 <a-table
@@ -91,7 +91,7 @@
                     <a-input v-model="interfaceForm.interfaceName" placeholder="输入..."></a-input>
                 </a-form-model-item>
                 <a-form-model-item prop="interfaceAddress" label="地址："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
-                    <a-input v-model="interfaceForm.interfaceAddress" placeholder="输入如aa/bb"></a-input>
+                    <a-input v-model="interfaceForm.interfaceAddress" placeholder="输入如/aa/bb"></a-input>
                 </a-form-model-item>
                 <a-form-model-item prop="interfaceMethod" label="请求类型："  :label-col="{ span: 4 }"  :wrapper-col="{ span: 20 }">
                     <a-select v-model="interfaceForm.interfaceMethod" defaultValue="GET">
@@ -298,7 +298,14 @@
 
         private handleReport(id:number): void{
             this.$router.push({
-                path:`/report/${id}`
+                name: 'report',
+                params:{
+                    id: String(id),
+                },
+                query:{
+                    group: '0'
+                }
+                // path:`/report/${id}`
             })
         }
 
@@ -383,6 +390,18 @@
                 }
             })
 
+        }
+
+        private handleInterInfo(id:number): void {
+            console.log(id,999999);
+            this.$router.push({
+                name: 'rappage',
+                params: {id: String(id)}
+            });
+            // this.$router.push({
+            //     path:`/detail/${this.$route.params.id}/addcase/${this.$route.params.id}/${this.proEnv}/${id}`
+            // });
+            // window.open('http://172.16.9.170:3000/repository/editor?id='+String(id),'_blank');
         }
 
     }
