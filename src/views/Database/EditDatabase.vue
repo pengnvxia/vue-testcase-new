@@ -136,7 +136,7 @@
                     }
                 },
                 (err: any) => {
-                    this.$message.error(err.message);
+                    this.$message;
                 }
             )
         }
@@ -153,7 +153,7 @@
                             }
                         },
                         (err: any) => {
-                            this.$message.error(err.message);
+                            this.$message;
                         }
                     )
                 }else {

@@ -6,7 +6,7 @@
         <a-form-model-item label="测试环境地址：" :label-col="{ span: 8 }" :wrapper-col="{ span: 8 }">
             <a-input placeholder="输入测试环境地址" v-model="projectForm.devAddress"></a-input>
         </a-form-model-item>
-        <a-form-model-item label="测试生产地址：" :label-col="{ span: 8 }" :wrapper-col="{ span: 8 }">
+        <a-form-model-item label="生产环境地址：" :label-col="{ span: 8 }" :wrapper-col="{ span: 8 }">
             <a-input placeholder="输入生产环境地址" v-model="projectForm.prodAddress"></a-input>
         </a-form-model-item>
         <a-form-model-item label="备注：" :label-col="{ span: 8 }" :wrapper-col="{ span: 8 }">
@@ -62,7 +62,7 @@
                                 this.$message;
                                 return;
                             }
-                            this.$message.error(err.errmsg);
+                            this.$message;
                         }
                     );
                 }else {

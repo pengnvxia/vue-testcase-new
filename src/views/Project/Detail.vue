@@ -235,7 +235,7 @@
                     }
                 },
                 (err: any) => {
-                    this.$message.error(err.errmsg);
+                    this.$message;
                 }
             );
         }
@@ -249,7 +249,7 @@
                     }
                 },
                 (err: any) => {
-                    this.$message.error(err.errmsg);
+                    this.$message;
                 }
             );
 
@@ -274,7 +274,7 @@
                                 this.$message;
                                 return;
                             }
-                            this.$message.error(err.errmsg);
+                            this.$message;
                         }
                     );
                 }else {
@@ -365,7 +365,7 @@
                     }
                 },
                 (err: any) => {
-                    this.$message.error(err.errmsg);
+                    this.$message;
                 }
 
             );

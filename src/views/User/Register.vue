@@ -50,7 +50,7 @@
                     }
                 },
                 (err: any) => {
-                    this.$message.error(err.errmsg);
+                    this.$message;
                 }
             )
         }

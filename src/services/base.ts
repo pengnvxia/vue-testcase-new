@@ -14,8 +14,13 @@ function getToken(): string|null {
   return token;
 }
 
+function getUserId(): string|null {
+  let userId= localStorage.getItem('userId');
+  return userId;
+}
+
 function isLogin(): boolean {
-  if(getToken()){
+  if(getToken() && getUserId()){
     return true;
   }else {
     return false;
@@ -34,7 +39,7 @@ export default function base(propConfig: AxiosRequestConfig, error: boolean = tr
     propConfig.headers = {};
   }
 
-  isLogin() && ( propConfig.headers = Object.assign(propConfig.headers, {token: getToken()}) );
+  isLogin() && ( propConfig.headers = Object.assign(propConfig.headers, {token: getToken(), uid: getUserId()}) );
 
 
   const newConfig: AxiosRequestConfig = Object.assign(defaultConfig, propConfig);

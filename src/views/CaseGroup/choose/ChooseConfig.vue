@@ -141,7 +141,7 @@
                     }
                 },
                 (err: any) => {
-                    this.$message.error(err.message);
+                    this.$message;
                 }
             )
         }
