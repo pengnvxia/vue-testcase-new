@@ -4,13 +4,13 @@ import { RouteConfig } from 'vue-router';
 
 const testcase: RouteConfig[] = [
         {
-            path: 'addcase/:projectId/:envId/:id',
+            path: 'addcase/:projectId/:envId/:interid',
             name: 'addCase',
-            meta: {title:'添加用例',levels: 3,isShow: false},
+            meta: {title:'添加用例',levels:3,isShow: false},
             component: ()=> import('@/views/Case/AddCase.vue')
         },
         {
-            path: 'editcase/:projectId/:envId/:id',
+            path: 'editcase/:projectId/:envId/:interid',
             name: 'editCase',
             meta: {title:'编辑用例',levels:3,isShow: false},
             component: ()=> import('@/views/Case/EditCase.vue')

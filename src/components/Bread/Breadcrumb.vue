@@ -6,7 +6,8 @@
                     <a href="javascript:void(0)">{{breadcrumbList}}</a>
                 </a-breadcrumb-item>
                 <a-breadcrumb-item v-for="item in data">
-                    <a @click="goUrl(item.name ? item.name : item.path, item.name ? 1 : 2)" href="javascript:void(0)">{{item.title}}</a>
+                    <span>{{item.title}}</span>
+<!--                    <a @click="goUrl(item.name ? item.name : item.path, item.name ? 1 : 2)" href="javascript:void(0)">{{item.title}}</a>-->
                 </a-breadcrumb-item>
             </a-breadcrumb>
         </div>

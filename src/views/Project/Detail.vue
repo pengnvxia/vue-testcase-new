@@ -18,7 +18,7 @@
                 </template>
         <span slot="operation" slot-scope="record">
         <a @click="handleInterInfo(record.id)">编辑</a>
-        <a>删除</a>
+<!--        <a>删除</a>-->
         </span>
                 <a-table
                         slot="expandedRowRender"
@@ -116,7 +116,7 @@
         </a-modal>
     </div>
         <div>
-            <router-view v-if="$route.meta.levels === 3"></router-view>
+            <router-view v-if="$route.meta.levels === 3" v-on:info="handleInfo"></router-view>
         </div>
     </div>
 </template>
@@ -288,12 +288,23 @@
             this.visible = false;
         }
 
-        private handleAddCase(id:number): void{
+        private handleAddCase(interid:number): void{
             this.$router.push({
-                path:`/detail/${this.$route.params.id}/addcase/${this.$route.params.id}/${this.proEnv}/${id}`
+                path:`/detail/${this.$route.params.id}/addcase/${this.$route.params.id}/${this.proEnv}/${interid}`
 
                 // path:`/addcase/${id}`
             });
+        }
+        private handleInfo(data: any): void{
+            if(data==="1"){
+                console.log()
+                this.moduleList();
+                this.$router.push(
+                    {
+                        path: `/detail/${this.$route.params.id}`
+                    }
+                )
+            }
         }
 
         private handleReport(id:number): void{
@@ -309,9 +320,9 @@
             })
         }
 
-        private handleEditTestcase(id: number): void{
+        private handleEditTestcase(interid: number): void{
             this.$router.push({
-                path:`/detail/${this.$route.params.id}/editcase/${this.$route.params.id}/${this.proEnv}/${id}`
+                path:`/detail/${this.$route.params.id}/editcase/${this.$route.params.id}/${this.proEnv}/${interid}`
             })
         }
 
@@ -379,6 +390,7 @@
                         (result: any) => {
                             if (result.errcode==="0"){
                                 this.$message.success("新增成功，即将跳转到编辑页面");
+                                this.handleInterInfo(result.retval.interfaceId);
                             }
                         },
                         (err: any) => {
@@ -393,7 +405,6 @@
         }
 
         private handleInterInfo(id:number): void {
-            console.log(id,999999);
             this.$router.push({
                 name: 'rappage',
                 params: {id: String(id)}

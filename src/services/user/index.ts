@@ -17,6 +17,7 @@ export function login(username: string,password: string): AxiosPromise {
 }
 
 export function register(username: string,password: string,email: string|null): AxiosPromise {
+    password=Base64.encode(password);
     const config: AxiosRequestConfig = {
         url: `${PROJECTSERVER}/user/register`,
         method: 'post',

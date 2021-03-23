@@ -115,11 +115,6 @@
                 </a-collapse>
             </a-form-model>
             <div>
-                <a-select v-model="chooseProjectId" placeholder="选择环境" class="select-project">
-                    <a-select-option :value="item.id" v-for="item in projects">
-                        {{ item.projectName }}
-                    </a-select-option>
-                </a-select>
                 <div class="choose-config">
                     <a-button type="primary" icon="plus" ghost @click="handleChooseConfig" class="btn">
                         选择配置项
@@ -131,6 +126,11 @@
                     </a-table>
                 </div>
                 <div class="choose-case">
+                    <a-select v-model="chooseProjectId" placeholder="选择环境" class="select-project">
+                        <a-select-option :value="item.id" v-for="item in projects">
+                            {{ item.projectName }}
+                        </a-select-option>
+                    </a-select>
                     <a-button type="primary" icon="plus" ghost @click="handleChooseCase" class="btn">
                         选择用例
                     </a-button>

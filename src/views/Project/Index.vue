@@ -85,8 +85,6 @@
         private handleDetail(projectId:number): void {
             this.$router.push({
                 path:`/detail/${projectId}`
-
-
             });
         }
 

@@ -689,7 +689,7 @@
         }
 
         private getInterfaceInfo():void {
-            interfaceInfo(Number(this.$route.params.id)).then(
+            interfaceInfo(Number(this.$route.params.interid)).then(
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.addKey(result.retval);
@@ -796,11 +796,12 @@
                 if (valid) {
                     if(this.testcaseForm.responses.length<=0 || this.verifyResponse(this.testcaseForm.responses)){
                         this.processTestcaseForm(this.testcaseForm);
-                        addTestcase(Number(this.$route.params.id), this.testcaseForm).then(
+                        addTestcase(Number(this.$route.params.interid), this.testcaseForm).then(
                             (result: any) => {
                                 if (result.errcode === "0") {
                                     this.$message.success("提交成功");
-                                    this.$router.go(-1);
+                                    // this.$router.go(-1);
+                                    this.$emit("info","1");
                                 }
                             },
                             (err: any) => {

@@ -693,7 +693,7 @@
         }
 
         private getInterfaceInfo():void {
-            testcaseInfo(Number(this.$route.params.id)).then(
+            testcaseInfo(Number(this.$route.params.interid)).then(
                 (result: any) => {
                     if (result.errcode === "0") {
                         this.addKey(result.retval);
@@ -815,7 +815,7 @@
                 if (valid) {
                     if(this.testcaseForm.responses.length<=0 || this.verifyResponse(this.testcaseForm.responses)){
                         this.processTestcaseForm(this.testcaseForm);
-                    editTestcase(Number(this.$route.params.id), this.testcaseForm).then(
+                    editTestcase(Number(this.$route.params.interid), this.testcaseForm).then(
                         (result: any) => {
                             if (result.errcode === "0") {
                                 this.$message.success("更新成功");
