@@ -3,6 +3,7 @@ import App from './App.vue';
 import { router } from './router/index';
 import store from './store';
 import '@/common/ts/config/antDesign';
+import '@/common/ts/filter.ts';
 
 import '@/common/sass/index.scss';
 

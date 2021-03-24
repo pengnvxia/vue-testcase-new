@@ -1,4 +1,4 @@
-export interface Params {
-    id: number;
-    name: string;
-}
+// export interface Params {
+//     id: number;
+//     name: string;
+// }

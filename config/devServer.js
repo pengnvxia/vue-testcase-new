@@ -1,8 +1,8 @@
 module.exports = {
   host: "0.0.0.0",
   proxy: {
-    '^/web': {
-      target: 'http://172.19.21.236:8000',
+    '^/testcase': {
+      target: 'http://127.0.0.1:8080',
       changeOrigin: true
     }
   }

@@ -6,11 +6,26 @@ import { message } from 'ant-design-vue';
 
 import {
   ERR_OK,
-  ERR_UNLOGIN,
-  ERR_LOGIN_TIMEOUT,
-  ERR_NO_AUTH,
-  ERR_NO_RELEASE
+
 } from '@/config/httpCode.ts';
+
+function getToken(): string|null {
+  let token= localStorage.getItem('token');
+  return token;
+}
+
+function getUserId(): string|null {
+  let userId= localStorage.getItem('userId');
+  return userId;
+}
+
+function isLogin(): boolean {
+  if(getToken() && getUserId()){
+    return true;
+  }else {
+    return false;
+  }
+}
 
 export default function base(propConfig: AxiosRequestConfig, error: boolean = true, id: number = 0): AxiosPromise {
 
@@ -19,6 +34,13 @@ export default function base(propConfig: AxiosRequestConfig, error: boolean = tr
     headers: {},
     timeout: 60000 * 4
   };
+
+  if (!propConfig.headers || propConfig.headers === undefined) {
+    propConfig.headers = {};
+  }
+
+  isLogin() && ( propConfig.headers = Object.assign(propConfig.headers, {token: getToken(), uid: getUserId()}) );
+
 
   const newConfig: AxiosRequestConfig = Object.assign(defaultConfig, propConfig);
 
@@ -30,26 +52,26 @@ export default function base(propConfig: AxiosRequestConfig, error: boolean = tr
         return;
       }
 
-      if (status === ERR_UNLOGIN) {
-        goLogin();
-        return;
-      }
-
-      if (status === ERR_NO_RELEASE) {
-        reject(res.data);
-        return;
-      }
-
-      if (status === ERR_NO_AUTH) {
-        reject(res.data);
-        return;
-      }
-
-      if (status === ERR_LOGIN_TIMEOUT) {
-        goLogin();
-        return;
-      }
-
+      // if (status === ERR_UNLOGIN) {
+      //   goLogin();
+      //   return;
+      // }
+      //
+      // if (status === ERR_NO_RELEASE) {
+      //   reject(res.data);
+      //   return;
+      // }
+      //
+      // if (status === ERR_NO_AUTH) {
+      //   reject(res.data);
+      //   return;
+      // }
+      //
+      // if (status === ERR_LOGIN_TIMEOUT) {
+      //   goLogin();
+      //   return;
+      // }
+      //
       if (error) {
         message.error(res.data.errmsg);
       }
