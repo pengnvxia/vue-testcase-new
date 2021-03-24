@@ -28,7 +28,6 @@
     "js-md5": "latest"
   },
   "devDependencies": {
-    "@jiahui/vue-cli-plugin-jhpy": "2.0.2",
     "@types/jest": "^24.0.19",
     "@types/uuid": "8.0.0",
     "@vue/cli-plugin-babel": "^4.4.0",
