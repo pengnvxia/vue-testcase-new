@@ -14,7 +14,7 @@
         private skipUrl: string='';
 
         private mounted(): void {
-            this.skipUrl='http://172.16.9.170:3000/repository/editor?id='+this.$route.params.id+'&userID='+localStorage.getItem('userId');
+            this.skipUrl='https://devrapdolores.jhpy.org/repository/editor?id='+this.$route.params.id+'&userID='+localStorage.getItem('userId');
             console.log(this.skipUrl);
         }
     }
