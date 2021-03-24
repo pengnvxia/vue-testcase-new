@@ -35,23 +35,48 @@
             password:''
         }
 
-        private handleLogin(): void{
-            login(this.userForm.username,this.userForm.password).then(
-                (result: any) => {
-                    if (result.errcode === "0") {
-                        //存储token到浏览器
-                        this.$router.push({
-                            name:'project',
-                        });
-                        localStorage.setItem('token', result.retval.token);
-                        localStorage.setItem('username', result.retval.username);
-                        localStorage.setItem('userId', result.retval.userId);
-                    }
-                },
-                (err: any) => {
-                    this.$message;
+        private rules:any = {
+            username: [
+                {
+                    required: true,
+                    message: "请输入用户名",
+                    trigger: "blur"
                 }
-            )
+            ],
+            password: [
+                {
+                    required: true,
+                    message: "请输入密码",
+                    trigger: "blur"
+                }
+            ]
+        };
+
+        private handleLogin(): void{
+            const ref: any = this.$refs.ruleForm;
+            ref.validate((valid: boolean) => {
+                if(valid){
+                    login(this.userForm.username,this.userForm.password).then(
+                        (result: any) => {
+                            if (result.errcode === "0") {
+                                //存储token到浏览器
+                                this.$router.push({
+                                    name:'project',
+                                });
+                                localStorage.setItem('token', result.retval.token);
+                                localStorage.setItem('username', result.retval.username);
+                                localStorage.setItem('userId', result.retval.userId);
+                            }
+                        },
+                        (err: any) => {
+                            this.$message;
+                        }
+                    )
+                }else {
+                    return;
+                }
+            })
+
         }
 
         private handleRegister(): void{
@@ -63,7 +88,7 @@
     }
 </script>
 
-<style>
+<style lang="scss" scoped>
     .login {
         width: 100%;
         height: 100vh;

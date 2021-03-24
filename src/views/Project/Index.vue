@@ -59,7 +59,7 @@
         private projectListThree(): void {
             this.projectDataThree = [];
             if(this.projectData.length > 0){
-                for( var i = 0 ; i<(this.projectData.length / 3 >> 0) + 1; i ++){
+                for( let i = 0 ; i<(this.projectData.length / 3 >> 0) + 1; i ++){
                     if( 3 * ( i + 1 )<this.projectData.length ){
                         this.projectDataThree.push(this.projectData.slice( 3 * i, 3 * ( i + 1 )));
                     }else {
@@ -118,7 +118,7 @@
 
 </script>
 
-<style>
+<style lang="scss" scoped>
 
     .row {
         padding: 10px;

@@ -192,7 +192,7 @@
     }
 </script>
 
-<style>
+<style lang="scss" scoped>
 
     .searchForm {
         margin: 30px 0px 20px;

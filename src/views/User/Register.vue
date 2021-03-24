@@ -39,20 +39,46 @@
             email:null
         }
 
-        private handleRegister(): void{
-            register(this.userForm.username,this.userForm.password,this.userForm.email).then(
-                (result: any) => {
-                    if (result.errcode === "0") {
-                        //存储token到浏览器
-                        this.$router.push({
-                            name:'login',
-                        })
-                    }
-                },
-                (err: any) => {
-                    this.$message;
+        private rules:any = {
+            username: [
+                {
+                    required: true,
+                    message: "请输入用户名",
+                    trigger: "blur"
                 }
-            )
+            ],
+            password: [
+                {
+                    required: true,
+                    message: "请输入密码",
+                    trigger: "blur"
+                }
+            ]
+        };
+
+        private handleRegister(): void{
+            const ref: any = this.$refs.ruleForm;
+            ref.validate((valid: boolean) => {
+                if(valid){
+                    register(this.userForm.username,this.userForm.password,this.userForm.email).then(
+                        (result: any) => {
+                            if (result.errcode === "0") {
+                                //存储token到浏览器
+                                this.$router.push({
+                                    name:'login',
+                                })
+                            }
+                        },
+                        (err: any) => {
+                            this.$message;
+                        }
+                    )
+                }else {
+                    return;
+                }
+            })
+
+
         }
 
         private handleLogin(): void{
@@ -64,7 +90,7 @@
     }
 </script>
 
-<style>
+<style lang="scss" scoped>
     .login {
         width: 100%;
         height: 100vh;
