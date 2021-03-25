@@ -223,12 +223,12 @@
     }
 
 </script>
-<style lang="scss" scoped>
+<style scoped>
     .searchForm {
         margin: 30px 0px 20px;
     }
 
-    .searchForm .ant-form-item-control-wrapper {
+    .searchForm >>> .ant-form-item-control-wrapper {
         width: 300px;
     }
 

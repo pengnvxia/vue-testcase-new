@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-form-model layout="inline" class="searchForm">
-        <a-form-model-item label="配置名称1：">
+        <a-form-model-item label="配置名称：">
             <a-input  v-model="configName"></a-input>
         </a-form-model-item>
             <a-form-model-item label="项目名称：" class="searchInput">
@@ -192,13 +192,14 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 
     .searchForm {
         margin: 30px 0px 20px;
     }
-    .searchForm .ant-form-item-control {
-        width: 250px;
+
+    .searchForm >>> .ant-form-item-control-wrapper{
+        width: 300px;
     }
 
     .ant-btn {

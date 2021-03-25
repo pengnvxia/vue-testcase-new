@@ -204,3 +204,27 @@
     }
 
 </script>
+
+
+<style scoped>
+
+    .searchForm {
+        margin: 30px 0px 20px;
+    }
+
+    .searchForm >>> .ant-form-item-control-wrapper{
+        width: 300px;
+    }
+
+    .ant-btn {
+        margin-left: 50px;
+    }
+
+    .btn {
+        margin-left: 0px;
+        margin-bottom: 20px;
+        background-color:#1890ff;
+    }
+
+</style>
+
