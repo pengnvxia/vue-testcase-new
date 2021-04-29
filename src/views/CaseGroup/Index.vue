@@ -241,4 +241,9 @@
         margin-bottom: 20px;
         background-color:#1890ff;
     }
+
+    span >>> a {
+        display: inline-block;
+        margin-right: 10px;
+    }
 </style>

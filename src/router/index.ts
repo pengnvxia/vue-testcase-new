@@ -21,8 +21,8 @@ export const router: Router = new Router({
   base: process.env.BASE_URL,
   routes: [
       ...project,
-      ...config,
       ...testcaseGroup,
+      ...config,
       ...database,
       ...login,
     {

@@ -47,4 +47,12 @@ export function editDatabase( databaseInfo: DatabaseInfo): AxiosPromise {
     return Base(config);
 }
 
+export function dbMini(): AxiosPromise {
+    const config: AxiosRequestConfig = {
+        url: `${PROJECTSERVER}/db/list/mini`,
+        method: 'get'
+    };
+    return Base(config);
+}
+
 

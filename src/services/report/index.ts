@@ -19,3 +19,11 @@ export function groupReportList( id: number): AxiosPromise {
     };
     return Base(config);
 }
+
+export function reportDetails( id: number): AxiosPromise {
+    const config: AxiosRequestConfig = {
+        url: `${PROJECTSERVER}/report/detail/${id}`,
+        method: 'get'
+    };
+    return Base(config);
+}

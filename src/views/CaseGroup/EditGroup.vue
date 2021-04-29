@@ -59,8 +59,8 @@
                                     <a-input v-model="record.value"/>
                                 </a-form-model-item>
                                 <a-form-model-item v-if="col=='database'">
-                                    <a-select v-model="record.databaseId">
-                                        <a-select-option :value="1">paper</a-select-option>
+                                    <a-select style="width: 100px;" v-model="record.databaseId">
+                                        <a-select-option v-for="item in dbInfo" :value="item.id">{{item.dbName}}</a-select-option>
                                     </a-select>
                                 </a-form-model-item>
                             </template>
@@ -100,8 +100,8 @@
                                     <a-input v-model="record.sql"/>
                                 </a-form-model-item>
                                 <a-form-model-item v-if="col == 'database'">
-                                    <a-select v-model="record.databaseId">
-                                        <a-select-option :value="1">paper</a-select-option>
+                                    <a-select style="width: 100px;" v-model="record.databaseId">
+                                        <a-select-option v-for="item in dbInfo" :value="item.id">{{item.dbName}}</a-select-option>
                                     </a-select>
                                 </a-form-model-item>
                             </template>
@@ -134,11 +134,29 @@
                     <a-button type="primary" icon="plus" ghost @click="handleChooseCase" class="btn">
                         选择用例
                     </a-button>
-                    <a-table :columns="editCases" :data-source="chooseCase" rowKey="caseId" :pagination="false">
-                        <span slot="operation" slot-scope="text,record,index">
-                            <a-icon type="minus" @click="handleDeleteCase(index)"/>
-                        </span>
-                    </a-table>
+                    <div class="table-content">
+                        <table class="custom-table">
+                            <thead>
+                            <tr>
+                                <th>caseId</th>
+                                <th>caseName</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <Draggable element="tbody" v-model="chooseCase">
+                                <tr v-for="(item, index) in chooseCase" :key="index">
+                                    <td>{{ item.caseId }}</td>
+                                    <td>{{ item.caseName }}</td>
+                                    <td><a-icon type="minus" @click="handleDeleteCase(index)"/></td>
+                                </tr>
+                            </Draggable>
+                        </table>
+                    </div>
+<!--                    <a-table :columns="editCases" :data-source="chooseCase" rowKey="caseId" :pagination="false">-->
+<!--                        <span slot="operation" slot-scope="text,record,index">-->
+<!--                            <a-icon type="minus" @click="handleDeleteCase(index)"/>-->
+<!--                        </span>-->
+<!--                    </a-table>-->
                 </div>
             </div>
             <div class="button-o">
@@ -156,7 +174,10 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { projectList } from '@/services/project/index';
+    import { dbMini } from '@/services/database/index';
     import { editGroup,groupDetail } from '@/services/caseGroup/index';
+    import Draggable from 'vuedraggable';
+
 
     interface GroupDetail {
         id?: number,
@@ -207,10 +228,16 @@
         caseName: string;
     }
 
-    @Component({
-        components: {}
-    })
+    interface Db {
+        id: number,
+        dbName: string
+    }
 
+    @Component({
+        components: {
+            Draggable
+        }
+    })
     export default class AddGroup extends Vue {
         private testcaseGroupForm: GroupDetail={
             groupName: '',
@@ -225,6 +252,8 @@
 
         private projects: Project[]=[];
 
+        private dbInfo: Db[] = [];
+
         private chooseProjectId=null;
 
         //是个变量
@@ -236,9 +265,14 @@
             return this.$store.getters.caseGroupEditCase;
         }
 
+        set chooseCase(val){
+            this.$store.commit('caseGroupEditCase',val);
+        }
+
         private mounted(): void {
             this.groupDetail(Number(this.$route.params.id));
             this.projectList();
+            this.getDbMini();
         }
 
         private projectList(){
@@ -252,12 +286,24 @@
             )
         }
 
+        private getDbMini(){
+            dbMini().then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.dbInfo=result.retval;
+                    }
+                },
+                (err: any) => {
+                    this.$message;
+                }
+            )
+        }
+
         private groupDetail(id: number){
             groupDetail(id).then(
                 (result: any)=>{
                     this.testcaseGroupForm=result.retval;
                     this.$store.commit('caseGroupEditConfig',result.retval.configIds);
-                    console.log(979797);
                     this.$store.commit('caseGroupEditCase',result.retval.testcaseIds);
 
                 },
@@ -312,7 +358,10 @@
             console.log('选择用例');
             this.$router.push({
                 name: 'editChooseCase',
-                params: {id: String(this.chooseProjectId)}
+                params: {
+                    id: String(this.chooseProjectId),
+                    envId: String(this.testcaseGroupForm.envId)
+                }
             });
         }
 
@@ -472,7 +521,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .select-project {
         margin-top: 10px;
         width: 200px;
@@ -495,6 +544,33 @@
     .button-o .cancel-btn {
         left: 50%;
         margin-left: 30px;
+    }
+
+    /deep/.custom-table {
+        width: 100%;
+        line-height: 1.5;
+        text-align: left;
+        border-radius: 4px 4px 0 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    /deep/.custom-table thead th{
+        padding: 16px 16px;
+        overflow-wrap: break-word;
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 500;
+        text-align: left;
+        background: #fafafa;
+        border-bottom: 1px solid #e8e8e8;
+        transition: background 0.3s ease;
+    }
+
+    /deep/.custom-table tr td {
+        padding: 16px 16px;
+        overflow-wrap: break-word;
+        border-bottom: 1px solid #e8e8e8;
+        transition: all 0.3s, border 0s;
     }
 
 </style>

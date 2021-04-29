@@ -1,23 +1,29 @@
 <template>
-    <a-table :columns="columns" :data-source="reportData" rowKey="id">
+    <div>
+        <a-table :columns="columns" :data-source="reportData" rowKey="id">
         <span slot="createdAt" slot-scope="createdAt">
             {{ createdAt | formatDate }}
         </span>
-        <span slot="result" slot-scope="result">
+            <span slot="result" slot-scope="result">
             <a-tag :color="result === 1 ? 'green':'red'">
                 {{result==1?'成功':'失败'}}
             </a-tag>
-
         </span>
-        <span slot="action" slot-scope="record">
-            <a @click="handleLookRrport(record.reportHtml)">查看</a>
+        <span slot="operation" slot-scope="record">
+            <a @click="handleDetails(record.id)">查看详情</a>
         </span>
-    </a-table>
+        </a-table>
+        <a-modal v-model="visible">
+            <ReportDetail :details="details">
+            </ReportDetail>
+        </a-modal>
+    </div>
 </template>
 
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
-    import {groupReportList, reportList} from "@/services/report/index";
+    import {groupReportList, reportList, reportDetails} from "@/services/report/index";
+    import ReportDetail from '@/components/Report/ReportDetail.vue';
 
     interface ReportItem {
         id: number,
@@ -28,10 +34,24 @@
         reportHtml: string
     }
 
-    @Component
+    interface Detail{
+        url: string,
+        method: string,
+        statusCode: string,
+        requestHeaders: string,
+        requestBody: string,
+        validators: string,
+        exception: string
+    }
+
+    @Component({
+        components: {ReportDetail}
+    })
     export default class Report extends Vue {
 
         private reportData: ReportItem[]=[];
+        private visible: boolean= false;
+        private details: Detail[]= [];
         private columns = [
             {
                 title: '执行时间',
@@ -53,8 +73,8 @@
             },
             {
                 title: '操作',
-                key: 'action',
-                scopedSlots: { customRender: 'action' },
+                key: 'operation',
+                scopedSlots: {customRender: 'operation'}
             },
         ];
         private mounted(): void {
@@ -88,11 +108,32 @@
 
         }
 
-        private handleLookRrport(content: string):void{
-            document.write(content);
-            document.close();
+        private handleDetails(id: number): void{
+            this.visible= true;
+            reportDetails(id).then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.details= result.retval;
+                    }
+                },
+                (err: any) => {
+                    this.$message;
+                }
+            )
         }
+
+
+        // private handleLookRrport(content: string):void{
+        //     document.write(content);
+        //     document.close();
+        // }
 
 
     }
 </script>
+
+<style scoped>
+    /deep/.ant-modal-content {
+        width: 1200px;
+    }
+</style>

@@ -1,10 +1,10 @@
 <template>
     <div>
         <div v-if="$route.meta.levels !== 3">
-        <a-form-model>
+        <a-form-model :rules="roleRules" ref="ruleForm" :model="testcaseGroupForm">
             <a-row>
             <a-col :span="12">
-            <a-form-model-item label="用例组名称：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
+            <a-form-model-item label="用例组名称：" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }" prop="groupName">
                 <a-input v-model="testcaseGroupForm.groupName"></a-input>
             </a-form-model-item>
             </a-col>
@@ -59,8 +59,8 @@
                                     <a-input v-model="record.value"/>
                                 </a-form-model-item>
                                 <a-form-model-item v-if="col=='database'">
-                                    <a-select v-model="record.databaseId">
-                                        <a-select-option :value="1">paper</a-select-option>
+                                    <a-select style="width: 100px;" v-model="record.databaseId">
+                                        <a-select-option v-for="item in dbInfo" :value="item.id">{{item.dbName}}</a-select-option>
                                     </a-select>
                                 </a-form-model-item>
                             </template>
@@ -100,8 +100,8 @@
                                     <a-input v-model="record.sql"/>
                                 </a-form-model-item>
                                 <a-form-model-item v-if="col == 'database'">
-                                    <a-select v-model="record.databaseId">
-                                        <a-select-option :value="1">paper</a-select-option>
+                                    <a-select style="width: 100px;" v-model="record.databaseId">
+                                        <a-select-option v-for="item in dbInfo" :value="item.id">{{item.dbName}}</a-select-option>
                                     </a-select>
                                 </a-form-model-item>
                             </template>
@@ -135,11 +135,30 @@
                     <a-button type="primary" icon="plus" ghost @click="handleChooseCase" class="btn">
                         选择用例
                     </a-button>
-                    <a-table :columns="editCases" :data-source="chooseCase" rowKey="caseId" :pagination="false">
-                        <span slot="operation" slot-scope="text,record,index">
-                            <a-icon type="minus" @click="handleDeleteCase(index)"/>
-                        </span>
-                    </a-table>
+                    <div class="table-content">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>caseId</th>
+                                    <th>caseName</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <Draggable element="tbody" v-model="chooseCase">
+                                <tr v-for="(item, index) in chooseCase" :key="index">
+                                    <td>{{ item.caseId }}</td>
+                                    <td>{{ item.caseName }}</td>
+                                    <td><a-icon type="minus" @click="handleDeleteCase(index)"/></td>
+                                </tr>
+                            </Draggable>
+                        </table>
+                    </div>
+<!--                        <a-table :columns="editCases" :pagination="false">-->
+<!--                            <span slot="operation" slot-scope="text,record,index">-->
+<!--                                    <a-icon type="minus" @click="handleDeleteCase(index)"/>-->
+<!--                            </span>-->
+<!--                        </a-table>-->
+
                 </div>
             </div>
             <div class="button-o">
@@ -157,7 +176,9 @@
 <script lang="ts">
     import { Component, Vue, Prop } from 'vue-property-decorator';
     import { projectList } from '@/services/project/index';
+    import { dbMini } from '@/services/database/index';
     import { addGroup } from '@/services/caseGroup/index';
+    import Draggable from 'vuedraggable';
 
     // interface TestcaseGroup {
     //     projectName: string,
@@ -217,10 +238,16 @@
         caseName: string;
     }
 
-    @Component({
-        components: {}
-    })
+    interface Db {
+        id: number,
+        dbName: string
+    }
 
+    @Component({
+        components: {
+            Draggable
+        }
+    })
     export default class AddGroup extends Vue {
         private testcaseGroupForm: GroupDetail={
             groupName: '',
@@ -232,6 +259,18 @@
             parameters: [],
             setuphooks: []
         }
+
+        private dbInfo: Db[] = [];
+
+        private roleRules:any = {
+            groupName: [
+                {
+                    required: true,
+                    message: "请输入用例组名称",
+                    trigger: "blur"
+                }
+            ],
+        };
 
         private projects: Project[]=[];
 
@@ -246,8 +285,13 @@
             return this.$store.getters.caseGroupEditCase;
         }
 
+        set chooseCase(val){
+            this.$store.commit('caseGroupEditCase',val);
+        }
+
         private mounted(): void {
             this.projectList();
+            this.getDbMini();
         }
 
         private projectList(){
@@ -261,13 +305,26 @@
             )
         }
 
+        private getDbMini(){
+            dbMini().then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.dbInfo=result.retval;
+                    }
+                },
+                (err: any) => {
+                    this.$message;
+                }
+            )
+        }
+
         private handleAddVariables(index: number):void {
             const newData = {
                 key: (new Date()).valueOf(),
                 name: '',
                 type: 'String',
                 value: '',
-                databaseId: 0
+                databaseId: ''
             };
             this.testcaseGroupForm.variables.splice(index+1,0,newData);
         }
@@ -305,7 +362,10 @@
         private handleChooseCase(): void {
             this.$router.push({
                 name: 'chooseCase',
-                params: {id: String(this.chooseProjectId)}
+                params: {
+                    id: String(this.chooseProjectId),
+                    envId: String(this.testcaseGroupForm.envId)
+                }
             });
         }
 
@@ -326,39 +386,51 @@
         }
 
         private handleAddCaseGroup(): void {
-            let that=this;
-            if(this.chooseConfig.length>0){
-                let configList: number[]=[];
-                this.chooseConfig.forEach(function (value: ChooseConfig) {
-                    configList.push(value.id);
-                });
-                this.testcaseGroupForm.configIds='['+String(configList)+']';
-            }
-            if(this.chooseCase.length>0){
-                let caseList: number[]=[];
-                this.chooseCase.forEach(function (value: ChooseCase) {
-                    caseList.push(value.caseId);
-                });
-                this.testcaseGroupForm.testcaseIds='['+String(caseList)+']';
-            }
-            addGroup(this.testcaseGroupForm).then(
-                (result: any)=>{
-                    if (result.errcode === "0") {
-                        this.$message.success("添加成功！")
-                        this.$router.go(-1);
-                        this.$store.commit('caseGroupEditConfig',[]);
-                        this.$store.commit('caseGroupEditCase',[]);
+            const ref: any = this.$refs.ruleForm;
+            ref.validate((valid: boolean) => {
+                if(valid){
+                    let that=this;
+                    if(this.chooseConfig.length>0){
+                        let configList: number[]=[];
+                        this.chooseConfig.forEach(function (value: ChooseConfig) {
+                            configList.push(value.id);
+                        });
+                        this.testcaseGroupForm.configIds='['+String(configList)+']';
                     }
-                },
-                (err: any)=>{
-                    this.$message;
+                    if(this.chooseCase.length>0){
+                        let caseList: number[]=[];
+                        this.chooseCase.forEach(function (value: ChooseCase) {
+                            caseList.push(value.caseId);
+                        });
+                        this.testcaseGroupForm.testcaseIds='['+String(caseList)+']';
+                    }
+                    addGroup(this.testcaseGroupForm).then(
+                        (result: any)=>{
+                            if (result.errcode === "0") {
+                                this.$message.success("添加成功！")
+                                this.$router.go(-1);
+                                this.$store.commit('caseGroupEditConfig',[]);
+                                this.$store.commit('caseGroupEditCase',[]);
+                            }
+                        },
+                        (err: any)=>{
+                            this.$message;
+                        }
+                    )
+                }else {
+                    return false;
                 }
-            )
+            })
 
         }
 
         private handleCancel(): void {
             this.$router.go(-1);
+        }
+
+        private handleDraggableChange(e: any): void {
+            console.log(11111);
+            console.log(e);
         }
 
         private variablesColumns= [
@@ -461,7 +533,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .select-project {
         margin-top: 10px;
         width: 200px;
@@ -486,4 +558,30 @@
         margin-left: 30px;
     }
 
+    /deep/.custom-table {
+        width: 100%;
+        line-height: 1.5;
+        text-align: left;
+        border-radius: 4px 4px 0 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    /deep/.custom-table thead th{
+        padding: 16px 16px;
+        overflow-wrap: break-word;
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 500;
+        text-align: left;
+        background: #fafafa;
+        border-bottom: 1px solid #e8e8e8;
+        transition: background 0.3s ease;
+    }
+
+    /deep/.custom-table tr td {
+        padding: 16px 16px;
+        overflow-wrap: break-word;
+        border-bottom: 1px solid #e8e8e8;
+        transition: all 0.3s, border 0s;
+    }
 </style>

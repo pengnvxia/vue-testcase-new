@@ -62,7 +62,7 @@
                         </a-form-model-item>
                         <a-form-model-item v-else>
                             <a-select style="width: 100px;" :defaultValue="1" v-model="record.databaseId">
-                                <a-select-option :value="1">paper</a-select-option>
+                                <a-select-option v-for="item in dbInfo" :value="item.id">{{item.dbName}}</a-select-option>
                             </a-select>
                         </a-form-model-item>
                     </div>
@@ -78,8 +78,8 @@
                 <a-table bordered :data-source="testcaseForm.parameters" :columns="parametersColumns" :pagination="false">
                     <template v-for="col in ['name', 'value']" :slot="col" slot-scope="text, record, index">
                         <div :key="col">
-                            <a-form-model-item v-if="col == 'name'" :prop="'parameters.'+index+'.name'" :rules="ruleForm.proName">
-                                <a-input v-model="record.keyName" v-if="col == 'name'"/>
+                            <a-form-model-item v-if="col == 'name'" :prop="'parameters.'+index+'.keyName'" :rules="ruleForm.proName">
+                                <a-input v-model="record.keyName"/>
                             </a-form-model-item>
                             <a-form-model-item v-if="col == 'value'" :prop="'parameters.'+index+'.value'" :rules="ruleForm.proValue">
                                 <a-input v-model="record.value"/>
@@ -103,8 +103,8 @@
                                 <a-input v-model="record.sql"/>
                             </a-form-model-item>
                             <a-form-model-item v-else>
-                                <a-select style="width: 100px;" :defaultValue="1">
-                                    <a-select-option :value="1">paper</a-select-option>
+                                <a-select style="width: 100px;" :defaultValue="1" v-model="record.databaseId">
+                                    <a-select-option v-for="item in dbInfo" :value="item.id">{{item.dbName}}</a-select-option>
                                 </a-select>
                             </a-form-model-item>
                         </div>
@@ -281,8 +281,8 @@
     import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
     import { addTestcase,interfaceInfo } from '@/services/testcase/index';
     import { configList } from '@/services/testcaseConfig/index';
+    import { dbMini } from '@/services/database/index';
     import CaseExtract from '@/components/CaseComponents/CaseExtract.vue';
-
 
     interface Testcase {
         testcaseName: string,
@@ -301,6 +301,11 @@
 
     }
 
+    interface Db {
+        id: number,
+        dbName: string
+    }
+
 
     @Component({
         components: {
@@ -308,33 +313,6 @@
         }
     })
     export default class AddCase extends Vue {
-        // private aaa=[{
-        //     key: 1,
-        //     name: 'ssss',
-        //     responseKey: 'cccc'
-        // }]
-
-        // private bbb=[
-        //     {
-        //         title: 'name',
-        //         dataIndex: 'name',
-        //         // width: '15%',
-        //         // scopedSlots: { customRender: 'name' },
-        //     },
-        //     {
-        //         title: 'sql',
-        //         dataIndex: 'sql',
-        //         // width: '10%',
-        //         // scopedSlots: { customRender: 'sql' },
-        //     },
-        //     {
-        //         title: 'operation',
-        //         dataIndex: 'operation',
-        //         // scopedSlots: { customRender: 'operation' },
-        //     },
-        // ];
-
-
 
         private testcaseForm: Testcase={
             testcaseName: '',
@@ -357,6 +335,7 @@
         private selectedItems: any[] = [];
         private options: any[]=[];
         private notSelectedItems: any[] = [];
+        private dbInfo: Db[] = [];
         private variablesColumns= [
             {
                 title: 'name',
@@ -525,6 +504,7 @@
 
         private mounted():void {
             this.getOptions();
+            this.getDbMini();
         }
 
         private getOptions(){
@@ -533,6 +513,19 @@
                     if (result.errcode === "0") {
                         this.options=result.retval;
                         this.getInterfaceInfo();
+                    }
+                },
+                (err: any) => {
+                    this.$message;
+                }
+            )
+        }
+
+        private getDbMini(){
+            dbMini().then(
+                (result: any) => {
+                    if (result.errcode === "0") {
+                        this.dbInfo=result.retval;
                     }
                 },
                 (err: any) => {
@@ -588,7 +581,7 @@
             const newData = {
                 key: (new Date()).valueOf(),
                 sql: '',
-                database: ''
+                databaseId: ''
             };
             this.testcaseForm.setuphooks.splice(index+1,0,newData);
         }

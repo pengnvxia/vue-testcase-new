@@ -72,7 +72,7 @@
     }
     @Component
     export default class Detail extends Vue {
-        private proEnv: string = this.$route.params.id;
+        private proEnv: string = this.$route.params.envId;
         private modules: Mod[] = [];
         private moduleId: number = 0;
         private repositoryId: number = Number(this.$route.params.id);

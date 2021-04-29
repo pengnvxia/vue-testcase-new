@@ -418,8 +418,8 @@
     }
 
 </script>
-<style>
-    span a {
+<style scoped>
+    span >>> a {
         display: inline-block;
         margin-right: 10px;
     }
