@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div ref="replayModal">
         <a-table :columns="columns" :data-source="reportData" rowKey="id">
         <span slot="createdAt" slot-scope="createdAt">
             {{ createdAt | formatDate }}
@@ -13,7 +13,7 @@
             <a @click="handleDetails(record.id)">查看详情</a>
         </span>
         </a-table>
-        <a-modal v-model="visible">
+        <a-modal v-model="visible" :getContainer="()=>$refs.replayModal" :footer="null" title="报告详情">
             <ReportDetail :details="details">
             </ReportDetail>
         </a-modal>
@@ -135,5 +135,12 @@
 <style scoped>
     /deep/.ant-modal-content {
         width: 1200px;
+    }
+    /deep/.ant-modal-content {
+        margin-left: -200px;
+    }
+    /deep/.ant-modal-title {
+        display: inline;
+        margin-left: 560px;
     }
 </style>

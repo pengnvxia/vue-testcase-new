@@ -324,7 +324,7 @@
                 name: '',
                 type: 'String',
                 value: '',
-                databaseId: ''
+                databaseId: 1
             };
             this.testcaseGroupForm.variables.splice(index+1,0,newData);
         }

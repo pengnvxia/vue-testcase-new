@@ -331,8 +331,9 @@
             caseIds.push(caseId);
             var that: any=this;
             this.$confirm({
-                title: `需要在运行用例后删除项目数据信息吗？`,
-                content: '删除后不能查看数据!',
+                // title: `需要在运行用例后删除项目数据信息吗？`,
+                title: `确定要运行用例吗？`,
+                // content: '删除后不能查看数据!',
                 onOk(){
                     that.flag=true;
                     runtestcase(caseIds,Number(that.$route.params.id),Number(that.proEnv),that.flag).then(
