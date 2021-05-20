@@ -776,30 +776,32 @@
 
         private resursionAddKey(addKeyValue:any): void{
             let that=this;
-            addKeyValue.forEach(function (value:any){
-                value.key=(new Date()).valueOf()+Math.floor(Math.random() * 100000);
-                if((value.type=="Array" || value.type=="Object") && !value.hasOwnProperty("children")){
-                    if(value.type=="Array"){
-                        Vue.set(value,'children',[{
-                            indexValue:0,
-                            name: '',
-                            type: '',
-                            comparator: '=',
-                            expectedValue: ''
-                        }]);
-                    }else {
-                        Vue.set(value,'children',[{
-                            name: '',
-                            type: '',
-                            comparator: '=',
-                            expectedValue: ''
-                        }]);
+            if(addKeyValue!=null){
+                addKeyValue.forEach(function (value:any){
+                    value.key=(new Date()).valueOf()+Math.floor(Math.random() * 100000);
+                    if((value.type=="Array" || value.type=="Object") && !value.hasOwnProperty("children")){
+                        if(value.type=="Array"){
+                            Vue.set(value,'children',[{
+                                indexValue:0,
+                                name: '',
+                                type: '',
+                                comparator: '=',
+                                expectedValue: ''
+                            }]);
+                        }else {
+                            Vue.set(value,'children',[{
+                                name: '',
+                                type: '',
+                                comparator: '=',
+                                expectedValue: ''
+                            }]);
+                        }
                     }
-                }
-                if(value.hasOwnProperty("children")){
-                    that.resursionAddKey(value.children);
-                }
-            });
+                    if(value.hasOwnProperty("children")){
+                        that.resursionAddKey(value.children);
+                    }
+                });
+            }
         }
 
         private verifyResponse(responses: any): boolean {
